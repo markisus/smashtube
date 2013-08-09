@@ -1,4 +1,4 @@
 SmashTube
 =========
 
-Watch some pro level smash
+Watch some pro level Super Smash Brothers
