@@ -18,6 +18,7 @@ class Tournament(models.Model):
 class Set(models.Model):
     tournament = models.ForeignKey(Tournament, blank=True, null=True)
     description = models.CharField(blank=True, null=False, max_length=50)
+    players = models.ManyToManyField(Player, through='PlayerSession')
     index = models.IntegerField(blank=False, null=False)
 
     def __unicode__(self):
@@ -27,7 +28,6 @@ class Match(models.Model):
     game_title = models.ForeignKey(GameTitle, blank=False, null=False)
     set = models.ForeignKey(Set, blank=True, null=True)
     index = models.IntegerField(blank=True, null=False, default=1)
-    players = models.ManyToManyField(Player, through='PlayerSession')
     video_url = models.URLField(blank=False, null=False)
     start = models.CharField(blank=True, null=False, max_length=20)
     end = models.CharField(blank=True, null=False, max_length=20)
@@ -43,7 +43,7 @@ class PlayerSession(models.Model):
                 ('D', 'D'),
              )
     player = models.ForeignKey(Player)
-    match = models.ForeignKey(Match)
+    set = models.ForeignKey(Set)
     character = models.ForeignKey(Character)
     team = models.CharField(max_length=1, choices=TEAMS, blank=True, null=False)
     index = models.IntegerField(blank=False, null=False, default=1)
