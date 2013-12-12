@@ -1,0 +1,21 @@
+{% load staticfiles %}
+<html>
+    <head>
+{% load compress %}
+{% compress css %}
+<link type="text/css" rel="stylesheet" href="{% static "css/pure-min.css" %}" />
+
+{% endcompress %}
+{% compress js %}
+<script src="{% static "scripts/jquery-2.0.3.min.js" %}"></script>
+<script src="{% static "scripts/jquery-throttle.min.js" %}"></script>
+<script src="{% static "scripts/lodash.min.js" %}"></script>
+<script src="{% static "scripts/Ractive.js" %}"></script>
+<script src="{% static "scripts/require.js" %}" data-main="{% static "scripts/ui/update.js" %}"></script>
+{% endcompress %}
+    </head>
+    <body>
+    <h1>Update Listings</h1>
+    <div id='tournament-chooser'></div>
+    </body>
+</html>

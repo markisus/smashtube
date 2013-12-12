@@ -1,0 +1,9 @@
+<form class="{{form_style}}">
+    <legend>{{legend}}</legend>
+    <input type="text" value="{{filter_value}}" placeholder="{{placeholder}}"/>
+    {{#suggestions}}
+    <a href='#' proxy-tap='select' class="{{item_style}}">
+		{{name}}{{^id}} (New){{/id}}
+	</a>
+    {{/suggestions}}
+</form>

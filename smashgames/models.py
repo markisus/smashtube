@@ -1,5 +1,5 @@
 from django.db import models
-from smashdata.models import Character, GameInfo
+from smashconstants.models import Character, GameTitle
 from smashtube.util import nontrivial as n, str_or_else as s
 
 class Player(models.Model):
@@ -10,30 +10,23 @@ class Player(models.Model):
         return self.name
 
 class Tournament(models.Model):
-    name = models.CharField(blank=False, null=False, max_length=200)
-
-    def __unicode__(self):
-        return self.name
-
-class Section(models.Model):
-    name = models.CharField(blank=False, null=False, max_length=50)
+    name = models.CharField(unique=True, max_length=200)
 
     def __unicode__(self):
         return self.name
 
 class Set(models.Model):
-    game = models.ForeignKey(GameInfo, blank=False, null=False)
     tournament = models.ForeignKey(Tournament, blank=True, null=True)
-    section = models.ForeignKey(Section, blank=True, null=True)
     description = models.CharField(blank=True, null=False, max_length=50)
     index = models.IntegerField(blank=False, null=False)
 
     def __unicode__(self):
-        return ", ".join(n(["Set %d" % self.index, s(self.section), s(self.tournament)]))
+        return ", ".join(n(["Set %d" % self.index, s(self.description), s(self.tournament)]))
 
 class Match(models.Model):
-    index = models.IntegerField(blank=True, null=False, default=1)
+    game_title = models.ForeignKey(GameTitle, blank=False, null=False)
     set = models.ForeignKey(Set, blank=True, null=True)
+    index = models.IntegerField(blank=True, null=False, default=1)
     players = models.ManyToManyField(Player, through='PlayerSession')
     video_url = models.URLField(blank=False, null=False)
     start = models.CharField(blank=True, null=False, max_length=20)

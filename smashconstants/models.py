@@ -1,6 +1,6 @@
 from django.db import models
 
-class GameInfo(models.Model):
+class GameTitle(models.Model):
     name = models.CharField(null=False, blank=False, max_length=70)
     
     def __unicode__(self):
@@ -8,7 +8,7 @@ class GameInfo(models.Model):
 
 class Character(models.Model):
     name = models.CharField(null=False, blank=False, max_length=20)
-    games = models.ManyToManyField(GameInfo)
+    games = models.ManyToManyField(GameTitle)
 
     def __unicode__(self):
         return self.name
@@ -16,7 +16,7 @@ class Character(models.Model):
 class CharacterIcon(models.Model):
     icon = models.URLField(blank=False, null=False)
     character = models.ForeignKey(Character)
-    game = models.ForeignKey(GameInfo)
+    game = models.ForeignKey(GameTitle)
 
     def __unicode__(self):
         return self.icon
