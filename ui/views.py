@@ -22,7 +22,7 @@ def submit_youtube_link(request):
         return HttpResponse("LOL")
     return HttpResponse(request.POST['url'])
 
-def link_details(request):
+def link_details(request, video_id):
     return HttpResponse("Here is your link details")
 
 def update(request):
