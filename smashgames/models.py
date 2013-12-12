@@ -19,16 +19,19 @@ class Set(models.Model):
     tournament = models.ForeignKey(Tournament, blank=True, null=True)
     description = models.CharField(blank=True, null=False, max_length=50)
     players = models.ManyToManyField(Player, through='PlayerSession')
+    game_title = models.ForeignKey(GameTitle, blank=False, null=False)
     index = models.IntegerField(blank=False, null=False)
 
     def __unicode__(self):
         return ", ".join(n(["Set %d" % self.index, s(self.description), s(self.tournament)]))
 
+class VideoURL(models.Model):
+    video_url = models.URLField(blank=False, primary_key=True)
+
 class Match(models.Model):
-    game_title = models.ForeignKey(GameTitle, blank=False, null=False)
     set = models.ForeignKey(Set, blank=True, null=True)
     index = models.IntegerField(blank=True, null=False, default=1)
-    video_url = models.URLField(blank=False, null=False)
+    video_url = models.ForeignKey(VideoURL, blank=False, null=False)
     start = models.CharField(blank=True, null=False, max_length=20)
     end = models.CharField(blank=True, null=False, max_length=20)
 
