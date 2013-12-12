@@ -11,3 +11,8 @@ Submit a youtube link:
 Search: <br />
 
 Latest Submissions: <br />
+<ul>
+{% for url in latest %}
+<li>{{ url.video_url }}</li>
+{% endfor %}
+</ul>

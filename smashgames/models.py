@@ -26,7 +26,7 @@ class Set(models.Model):
         return ", ".join(n(["Set %d" % self.index, s(self.description), s(self.tournament)]))
 
 class VideoURL(models.Model):
-    video_url = models.URLField(blank=False, primary_key=True)
+    video_url = models.URLField(blank=False, null=False, unique=True)
 
 class Match(models.Model):
     set = models.ForeignKey(Set, blank=True, null=True)
