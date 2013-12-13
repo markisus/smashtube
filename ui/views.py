@@ -57,16 +57,15 @@ def submit_youtube_link(request):
     if url:
         # Check for duplicate
         if VideoURL.objects.filter(video_url=url).count() > 0:
-            return HttpResponse("This is a duplicate.")
+            return _HttpResponse("This is a duplicate.", status_code=422)
         else:
             # Store it
 
             VideoURL(video_url=url).save()
-            return HttpResponse("Okay!")
+            return PreviousPage(request)
     # url field didn't exist!
     else:
         return _HttpResponse("Something went wrong", status_code=422)
-    return HttpResponse(request.POST['url'])
 
 def link_details(request, video_id):
     try:

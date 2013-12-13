@@ -1,5 +1,5 @@
 from django.db import models
-from smashconstants.models import Character, GameTitle
+from smashconstants.models import Character, GameTitle, Stage
 from smashtube.util import nontrivial as n, str_or_else as s
 
 class Player(models.Model):
@@ -34,6 +34,7 @@ class Match(models.Model):
     start = models.CharField(blank=True, null=True, max_length=20)
     end = models.CharField(blank=True, null=True, max_length=20)
     players = models.ManyToManyField(Player, through='PlayerSession')
+    stage = models.ForeignKey(Stage, blank=True, null=True)
 
     def __unicode__(self):
         return ", ".join(n(["Match %d" % self.index, s(self.set)]))
