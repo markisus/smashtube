@@ -1,7 +1,11 @@
 from django.db import models
 
 class GameTitle(models.Model):
-    name = models.CharField(null=False, blank=False, max_length=70)
+    name = models.CharField(
+                            unique=True,
+                            null=False, 
+                            blank=False, 
+                            max_length=70)
     
     def __unicode__(self):
         return self.name

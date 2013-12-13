@@ -6,5 +6,5 @@ urlpatterns = patterns('',
     url(r'submit-youtube-link$', views.submit_youtube_link, name='submit-youtube-link'),
     url(r'link-details/(\d+)$', views.link_details, name='link-details'),
     url(r'update$', views.update, name='update'), 
-
+    url(r'populate$', views.populate, name='populate')
 )
