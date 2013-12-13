@@ -1,3 +1,4 @@
 require ['../main'], 
 (main) ->
-	console.log 'Hello world!'
+	require ['jquery', 'ractive'], ($, r) ->
+		console.log 'Hello world!'

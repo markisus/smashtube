@@ -8,6 +8,10 @@
 <h2 class="content-subhead"><a href="{{ video_url_model.video_url }}"> {{ video_url_model.video_url }} </a></h2>
 <iframe width="560" height="315" src="{{ video_url_model.video_url }}" frameborder="0" allowfullscreen></iframe>
 
+<h2 class="content-subhead">Existing Sets</h2>
+<div id="set-list">
+[Loading]
+</div>
 {% for set_model in set_models %}
 
 <h2 class="content-subhead">
