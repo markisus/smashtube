@@ -8,17 +8,20 @@ def index(request):
     return render(request, 'ui/index.html', {'latest': latest})
 
 def embedify_youtube_link(link):
+    print link
     version_1 = 'youtu\.be/(\w+)'
-    version_2 = 'youtube\.com/watch?v=(\w+)'
+    version_2 = 'youtube\.com/watch\?v=(\w+)'
     youtube_id = None
     try:
         youtube_id = re.search(version_1, link).group(1)
-    except:
-        pass
+        print "Found ytid1!"
+    except Exception as e:
+        print str(e)
     try:
         youtube_id = re.search(version_2, link).group(1)
-    except:
-        pass
+        print "Found ytid2!"
+    except Exception as e:
+        print str(e)
 
     if not youtube_id:
         raise ValueError("Not a valid youtube link")
@@ -41,7 +44,7 @@ def submit_youtube_link(request):
     try:
         url = embedify_youtube_link(url)
     except ValueError as e:
-        return _HttpResponse(e.message, status_code=422)
+        return _HttpResponse(str(e), status_code=422)
     if url:
         # Check for duplicate
         if VideoURL.objects.filter(video_url=url).count() > 0:
