@@ -1,5 +1,8 @@
 {% extends "ui/base.html"%}
-
+{% load staticfiles %}
+{% block js %}
+<script src="{% static "scripts/require.js" %}" data-main="{% static "scripts/ui/link-details.js" %}"></script>
+{% endblock %}
 {% block content %}
 
 <h2 class="content-subhead"><a href="{{ video_url_model.video_url }}"> {{ video_url_model.video_url }} </a></h2>
