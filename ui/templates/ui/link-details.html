@@ -1,11 +1,37 @@
-Info: <br/>
-Add Set Info
-<form action="" method="post"/>
-Game:
-<input type="text" name="game_title" value="Melee"/><br/>
-Tournament: 
-<input type="text" name="tournament"/><br/>
-Set Number: 
-<input type="number" value="1" min="1"/><br/>
-Players:
+{% extends "ui/base.html"%}
+
+{% block content %}
+<h2 class="content-subhead"><a href="{{ url.video_url }}"> {{ url.video_url }} </a></h2>
+<iframe width="560" height="315" src="//www.youtube.com/embed/j3OX07Y8Dvo" frameborder="0" allowfullscreen></iframe>
+<form class="pure-form pure-form-aligned">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="name">Username</label>
+            <input id="name" type="text" placeholder="Username">
+        </div>
+
+        <div class="pure-control-group">
+            <label for="password">Password</label>
+            <input id="password" type="password" placeholder="Password">
+        </div>
+
+        <div class="pure-control-group">
+            <label for="email">Email Address</label>
+            <input id="email" type="email" placeholder="Email Address">
+        </div>
+
+        <div class="pure-control-group">
+            <label for="foo">Supercalifragilistic Label</label>
+            <input id="foo" type="text" placeholder="Enter something here...">
+        </div>
+
+        <div class="pure-controls">
+            <label for="cb" class="pure-checkbox">
+                <input id="cb" type="checkbox"> I've read the terms and conditions
+            </label>
+
+            <button type="submit" class="pure-button pure-button-primary">Submit</button>
+        </div>
+    </fieldset>
 </form>
+{% endblock %}

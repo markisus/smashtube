@@ -1,33 +1,67 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound
 from smashgames.models import VideoURL
-
+import re
 # Create your views here.
 def index(request):
     latest = VideoURL.objects.all()
     return render(request, 'ui/index.html', {'latest': latest})
 
+def embedify_youtube_link(link):
+    version_1 = 'youtu\.be/(\w+)'
+    version_2 = 'youtube\.com/watch?v=(\w+)'
+    youtube_id = None
+    try:
+        youtube_id = re.search(version_1, link).group(1)
+    except:
+        pass
+    try:
+        youtube_id = re.search(version_2, link).group(1)
+    except:
+        pass
+
+    if not youtube_id:
+        raise ValueError("Not a valid youtube link")
+
+    return 'http://youtu.be/' + youtube_id
+
+# Allow for putting a status_code as an argument
+def _HttpResponse(*args, **kwargs):
+    status_code = kwargs.get('status_code')
+    if status_code:
+        del kwargs['status_code']
+        r = HttpResponse(*args, **kwargs)
+        r.status_code = status_code
+    else:
+        r = HttpResponse(*args, **kwargs)
+    return r
+
 def submit_youtube_link(request):
     url = request.POST.get('url', None)
+    try:
+        url = embedify_youtube_link(url)
+    except ValueError as e:
+        return _HttpResponse(e.message, status_code=422)
     if url:
         # Check for duplicate
         if VideoURL.objects.filter(video_url=url).count() > 0:
             return HttpResponse("This is a duplicate.")
         else:
             # Store it
+
             VideoURL(video_url=url).save()
-            return HttpResponse("I got your thing!")
+            return HttpResponse("Okay!")
     # url field didn't exist!
     else:
-        return HttpResponse("Something went wrong")
+        return _HttpResponse("Something went wrong", status_code=422)
     return HttpResponse(request.POST['url'])
 
 def link_details(request, video_id):
     try:
-        VideoURL.objects.get(pk=video_id)
+        video_url = VideoURL.objects.get(pk=video_id)
     except:
         return HttpResponseNotFound("Seems like this don't exist?")
-    return render(request, 'ui/link-details.html')
+    return render(request, 'ui/link-details.html', {'url': video_url})
 
 def update(request):
     return render(request, 'ui/update.html')

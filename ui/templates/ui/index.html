@@ -1,65 +1,26 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Smashtube</title>
-
-<link rel="stylesheet" href="/static/css/pure-min.css">
-<link rel="stylesheet" href="/static/css/ui/main.css">
-</head>
-<body>
-<div id="layout">
-    <!-- Menu toggle -->
-    <div id="main">
-        <div class="header">
-            <h1>Smashtube</h1>
-            <h2>Super Smash Video Database</h2>
-        </div>
-
-        <div class="content">
-            <h2 class="content-subhead">Add a Video</h2>
+{% extends "ui/base.html" %}
+{% block content %}
+<h2 class="content-subhead">Add a Video</h2>
             <p>
             <form class="pure-form" action="/submit-youtube-link" method="post" /> 
+            <fieldset class="pure-group">
              {% csrf_token %} 
-            <input type="url" name="url" placeholder="http://www.youtube.com/watch?v=nDhbNFzdEik"/>
+            <input class="pure-input-1-2" type="url" name="url" placeholder="http://www.youtube.com/watch?v=nDhbNFzdEik"/>
         
             <input type="submit" class="pure-button pure-button-primary" value="submit"/>
+</fieldset>
             </form>
             </p>
             <h2 class="content-subhead">Watch</h2>
             <p>
-                To use this layout, you can just copy paste the HTML, along with the CSS in <a href="/css/layouts/side-menu.css" alt="Side Menu CSS">side-menu.css</a>, and the JavaScript in <a href="/js/ui.js">ui.js</a>. The JS file uses vanilla JavaScript to simply toggle an <code>active</code> class that makes the menu responsive.
+                ...
             </p>
 
             <h2 class="content-subhead">Label</h2>
             <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                {% for url in latest %}
+                <li><a href="{% url 'link-details' url.id %}">{{ url.video_url }}</a></li>
+                {% endfor %}
             </p>
 
-            
-        </div>
-    </div>
-</div>
-</body>
-</html>
-<!--
-Welcome to smashtube! <br />
-
-Submit a youtube link:
-<form action="/submit-youtube-link" method="post" /> 
- {% csrf_token %} 
-<input type="url" name="url"/>
-<input type="submit" value="submit"/>
-</form>
-<br />
-
-Search: <br />
-
-Latest Submissions: <br />
-<ul>
-{% for url in latest %}
-<li><a href="{% url 'link-details' url.id %}">{{ url.video_url }}</a></li>
-{% endfor %}
-</ul> --!>
+{% endblock %}
