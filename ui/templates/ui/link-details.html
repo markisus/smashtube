@@ -1,10 +1,84 @@
 {% extends "ui/base.html"%}
 
 {% block content %}
-<h2 class="content-subhead"><a href="{{ url.video_url }}"> {{ url.video_url }} </a></h2>
+
+<h2 class="content-subhead"><a href="{{ video_url_model.video_url }}"> {{ video_url_model.video_url }} </a></h2>
 <iframe width="560" height="315" src="//www.youtube.com/embed/j3OX07Y8Dvo" frameborder="0" allowfullscreen></iframe>
+
+{% for set_model in set_models %}
+{% with set_model.playersession_set.all as player_session_models %}
+<h2 class="content-subhead">
+{% if set_model.description %} {{set_model.description}} {% else %} Set {% endif %} {{ set_model.index }} ({{set_model.game_title}})</h2>
+
+{% if player_session_models %}
+<table class="pure-table pure-table-horizontal">
+    <thead>
+        <tr>
+            <th>Player</th>
+            <th>Character</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    
+    <tbody>
+{% for player_session_model in player_session_models %}
+        <tr>
+            <td>{{ player_session_model.player }}</td>
+            <td>{{ player_session_model.character }}</td>
+            <td>
+            <form method="post" action="{% url 'delete-player-session' %}">
+            {% csrf_token %}
+            <input type="hidden" name="player-session-id" value="{{player_session_model.id}}">
+            <button type="submit" class="pure-button pure-button-primary">Delete</button>
+            </form>
+            </td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+{% else %}
+No Player Data
+{% endif %}
+{% endwith %}
+<form class="pure-form" action="{% url 'submit-player-for-set' set_model.id %}" method="post">
+    <fieldset>
+        {% csrf_token %}
+        <input type="text" name="player-name" placeholder="Player (Mango)">
+        <input type="text" name="character-name" placeholder="Character (Fox)">
+        <button type="submit" class="pure-button pure-button-primary">Add Player</button>
+    </fieldset>
+</form>
+<table class="pure-table pure-table-horizontal">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>URL</th>
+        </tr>
+    </thead>
+    
+    <tbody>
+{% for match_model in set_model.match_set.all %}
+        <tr>
+            <td>{{ match_model.index }}</td>
+            <td>{{ match_model.start }}</td>
+            <td>{{ match_model.end }}</td>
+            <td>{{ match_model.video_url.video_url }} {% if match_model.video_url.video_url == video_url_model.video_url %}[This video]{% endif %} </td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+<form method="post" action="{% url 'delete-set' %}">
+{% csrf_token %}
+<input type="hidden" name="set-id" value="{{set_model.id}}"/>
+<button type="submit" class="pure-button pure-button-warning">Delete Set</button>
+</form>
+{% endfor %}
+
 <h2 class="content-subhead">Add a Set</h2>
-<form class="pure-form pure-form-aligned" method="post" action="{% url 'submit-set-for-link' url.id %}">
+<form class="pure-form pure-form-aligned" method="post" action="{% url 'submit-set-for-link' video_url_model.id %}">
     <fieldset>
         <div class="pure-control-group">
             <label for="tournament">Tournament</label>

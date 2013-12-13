@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound
-from smashgames.models import VideoURL, Tournament, Match, Set
+from smashgames.models import VideoURL, Tournament, Match, Set, Player, PlayerSession
 from smashconstants.models import GameTitle
 import re
 # Create your views here.
@@ -62,10 +62,13 @@ def submit_youtube_link(request):
 
 def link_details(request, video_id):
     try:
-        video_url = VideoURL.objects.get(pk=video_id)
+        video_url_model = VideoURL.objects.get(pk=video_id)
     except:
         return HttpResponseNotFound("Seems like this don't exist?")
-    return render(request, 'ui/link-details.html', {'url': video_url})
+
+    # Get sets related to this link
+    set_models = Set.objects.filter(match__video_url=video_url_model).all()
+    return render(request, 'ui/link-details.html', {'video_url_model': video_url_model, 'set_models':set_models})
 
 def submit_set_for_link(request, link_id):
     video_url_model = VideoURL.objects.get(pk=link_id)
@@ -98,7 +101,40 @@ def submit_set_for_link(request, link_id):
     match_model.save()
 
     return HttpResponse("Okay!")
+ 
+def delete_set(request):
+    set_id = int(request.POST.get('set-id'))
+    Set.objects.get(pk=set_id).delete()
+    return HttpResponse("Ok")
+
+def delete_player_session(request):
+    PlayerSession.objects.get(pk=int(request.POST.get('player-session-id'))).delete()
+    return HttpResponse("Ok")
+
+
+def submit_player_for_set(request, set_id):
+    set_model = Set.objects.get(pk=int(set_id))
     
+    player_name = request.POST['player-name']
+    character_name = request.POST['character-name']
+
+    character_model = set_model.game_title.character_set.get(name=character_name)
+
+    try:
+        player_model = Player.objects.get(name=player_name)
+    except:
+        player_model = Player(name=player_name)
+        player_model.save()
+
+    player_session_model = PlayerSession(
+                                         player=player_model, 
+                                         set=set_model, 
+                                         character=character_model)
+    player_session_model.save()
+    return HttpResponse("Ok")
+    
+
+
 
 def update(request):
     return render(request, 'ui/update.html')
