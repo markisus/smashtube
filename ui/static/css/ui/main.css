@@ -6,7 +6,6 @@ body {
 This is the parent `<div>` that contains the menu and the content area.
 */
 #layout {
-    padding-left: 150px; /* left col width "#menu" */
     left: 0;
 }
 
