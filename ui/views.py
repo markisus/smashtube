@@ -1,10 +1,18 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from smashgames.models import VideoURL, Tournament, Match, Set, Player, PlayerSession
 from smashconstants.models import GameTitle
 import re
+
+def PreviousPage(request):
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 # Create your views here.
 def index(request):
+    # character - character
+    # player - character
+    # player - player
+
     latest = VideoURL.objects.all()
     return render(request, 'ui/index.html', {'latest': latest})
 
@@ -27,7 +35,7 @@ def embedify_youtube_link(link):
     if not youtube_id:
         raise ValueError("Not a valid youtube link")
 
-    return 'http://youtu.be/' + youtube_id
+    return 'http://www.youtube.com/embed/' + youtube_id
 
 # Allow for putting a status_code as an argument
 def _HttpResponse(*args, **kwargs):
@@ -67,7 +75,7 @@ def link_details(request, video_id):
         return HttpResponseNotFound("Seems like this don't exist?")
 
     # Get sets related to this link
-    set_models = Set.objects.filter(match__video_url=video_url_model).all()
+    set_models = Set.objects.filter(match__video_url=video_url_model).distinct()
     return render(request, 'ui/link-details.html', {'video_url_model': video_url_model, 'set_models':set_models})
 
 def submit_set_for_link(request, link_id):
@@ -100,25 +108,48 @@ def submit_set_for_link(request, link_id):
     match_model = Match(video_url = video_url_model, set=set_model)
     match_model.save()
 
-    return HttpResponse("Okay!")
+    return PreviousPage(request)
  
 def delete_set(request):
     set_id = int(request.POST.get('set-id'))
     Set.objects.get(pk=set_id).delete()
-    return HttpResponse("Ok")
+    return PreviousPage(request)
 
 def delete_player_session(request):
     PlayerSession.objects.get(pk=int(request.POST.get('player-session-id'))).delete()
-    return HttpResponse("Ok")
+    return PreviousPage(request)
 
+def edit_match(request):
+    match_model = Match.objects.get(pk=int(request.POST['match-id']))
+    match_model.start = request.POST.get('start', '')
+    match_model.end = request.POST.get('end', '')
+    match_model.index = int(request.POST.get('index', 1)) if int(request.POST.get('index', 1)) > 0 else 1
+    match_model.save()
+    return PreviousPage(request)
 
-def submit_player_for_set(request, set_id):
-    set_model = Set.objects.get(pk=int(set_id))
+def copy_match(request):
+    print "Copying match"
+    match_model = Match.objects.get(pk=int(request.POST['match-id']))
+    new_index = Match.objects.filter(set=match_model.set).count() + 1
+    match_model_copy = Match(set=match_model.set, video_url=match_model.video_url, index=new_index)
+    match_model_copy.save()
+    player_session_models = match_model.playersession_set.all()
+    for player_session_model in player_session_models:
+        player_session_model_copy = PlayerSession(player=player_session_model.player,
+                      match=match_model_copy,
+                      character=player_session_model.character,
+                      team=player_session_model.team,
+                      index=player_session_model.index)
+        player_session_model_copy.save()
+    return PreviousPage(request)
+
+def submit_player_for_match(request, match_id):
+    match_model = Match.objects.get(pk=int(match_id))
     
     player_name = request.POST['player-name']
     character_name = request.POST['character-name']
 
-    character_model = set_model.game_title.character_set.get(name=character_name)
+    character_model = match_model.set.game_title.character_set.get(name=character_name)
 
     try:
         player_model = Player.objects.get(name=player_name)
@@ -128,10 +159,10 @@ def submit_player_for_set(request, set_id):
 
     player_session_model = PlayerSession(
                                          player=player_model, 
-                                         set=set_model, 
+                                         match=match_model, 
                                          character=character_model)
     player_session_model.save()
-    return HttpResponse("Ok")
+    return PreviousPage(request)
     
 
 
@@ -157,7 +188,7 @@ def populate(request):
                     'Link',
                     'Luigi',
                     'Mario',
-                    'Marth'
+                    'Marth',
                     'Mewtwo',
                     'Mr. Game & Watch',
                     'Ness',

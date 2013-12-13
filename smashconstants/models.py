@@ -11,7 +11,14 @@ class GameTitle(models.Model):
         return self.name
 
 class Character(models.Model):
-    name = models.CharField(null=False, blank=False, max_length=20)
+    name = models.CharField(null=False, blank=False, unique=True, max_length=20)
+    games = models.ManyToManyField(GameTitle)
+
+    def __unicode__(self):
+        return self.name
+
+class Stage(models.Model):
+    name = models.CharField(null=False, blank=False, unique=True, max_length=50)
     games = models.ManyToManyField(GameTitle)
 
     def __unicode__(self):

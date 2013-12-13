@@ -13,7 +13,34 @@
             </p>
             <h2 class="content-subhead">Watch</h2>
             <p>
-                ...
+                <form class="pure-form pure-form-aligned" method="post" action="">
+                    <fieldset>
+                        <div class="pure-control-group">
+                            <label for="player1">Player</label>
+                            <input name="player1" type="text" placeholder="Mango">
+                        </div>
+
+                        <div class="pure-control-group">
+                            <label for="character1">Character</label>
+                            <input name="character1" type="text" placeholder="Fox">
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="pure-control-group">
+                            <label for="player2">Player</label>
+                            <input name="player2" type="text" placeholder="Mew2King">
+                        </div>
+
+                        <div class="pure-control-group">
+                            <label for="character2">Character</label>
+                            <input name="character2" type="text" placeholder="Marth">
+                        </div>
+                        {% csrf_token %}
+                        <div class="pure-controls">
+                            <button type="submit" class="pure-button pure-button-primary">Submit</button>
+                        </div>
+                    </fieldset>
+                </form>
             </p>
 
             <h2 class="content-subhead">Label</h2>
