@@ -29,11 +29,11 @@ class VideoURL(models.Model):
     video_url = models.URLField(blank=False, null=False, unique=True)
 
 class Match(models.Model):
-    set = models.ForeignKey(Set, blank=True, null=True)
+    set = models.ForeignKey(Set, blank=True, null=False)
     index = models.IntegerField(blank=True, null=False, default=1)
     video_url = models.ForeignKey(VideoURL, blank=False, null=False)
-    start = models.CharField(blank=True, null=False, max_length=20)
-    end = models.CharField(blank=True, null=False, max_length=20)
+    start = models.CharField(blank=True, null=True, max_length=20)
+    end = models.CharField(blank=True, null=True, max_length=20)
 
     def __unicode__(self):
         return ", ".join(n(["Match %d" % self.index, s(self.set)]))

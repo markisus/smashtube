@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound
-from smashgames.models import VideoURL
+from smashgames.models import VideoURL, Tournament, Match, Set
+from smashconstants.models import GameTitle
 import re
 # Create your views here.
 def index(request):
@@ -65,6 +66,39 @@ def link_details(request, video_id):
     except:
         return HttpResponseNotFound("Seems like this don't exist?")
     return render(request, 'ui/link-details.html', {'url': video_url})
+
+def submit_set_for_link(request, link_id):
+    video_url_model = VideoURL.objects.get(pk=link_id)
+
+    tournament = request.POST.get('tournament', None)
+    game_title = request.POST.get('game-title')
+    description = request.POST.get('description', '')
+    index = request.POST.get('index', None)
+    index = int(index) if index and int(index) > 0 else 1
+
+    if game_title != 'Melee':
+        raise Exception("Please say Melee")
+    game_title_model = GameTitle.objects.get(name=game_title)
+    tournament_model = None
+    if tournament:
+        try:
+            tournament_model = Tournament.objects.get(name=tournament)
+        except:
+            tournament_model = Tournament(name=tournament)
+            tournament_model.save()
+
+    set_model = Set(
+        tournament=tournament_model,
+        game_title=game_title_model,
+        description=description,
+        index=index)
+    set_model.save()
+
+    match_model = Match(video_url = video_url_model, set=set_model)
+    match_model.save()
+
+    return HttpResponse("Okay!")
+    
 
 def update(request):
     return render(request, 'ui/update.html')

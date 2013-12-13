@@ -3,33 +3,30 @@
 {% block content %}
 <h2 class="content-subhead"><a href="{{ url.video_url }}"> {{ url.video_url }} </a></h2>
 <iframe width="560" height="315" src="//www.youtube.com/embed/j3OX07Y8Dvo" frameborder="0" allowfullscreen></iframe>
-<form class="pure-form pure-form-aligned">
+<h2 class="content-subhead">Add a Set</h2>
+<form class="pure-form pure-form-aligned" method="post" action="{% url 'submit-set-for-link' url.id %}">
     <fieldset>
         <div class="pure-control-group">
-            <label for="name">Tournament</label>
-            <input id="name" type="text" placeholder="Username">
+            <label for="tournament">Tournament</label>
+            <input name="tournament" type="text" placeholder="Evo 2013">
         </div>
 
         <div class="pure-control-group">
-            <label for="password">Password</label>
-            <input id="password" type="password" placeholder="Password">
+            <label for="game-title">Game Title</label>
+            <input name="game-title" type="text" placeholder="Melee">
         </div>
 
         <div class="pure-control-group">
-            <label for="email">Email Address</label>
-            <input id="email" type="email" placeholder="Email Address">
+            <label for="description">Description</label>
+            <input name="description" type="text" placeholder="Grand Finals? Friendlies?">
         </div>
 
         <div class="pure-control-group">
-            <label for="foo">Supercalifragilistic Label</label>
-            <input id="foo" type="text" placeholder="Enter something here...">
+            <label for="index">Set Number</label>
+            <input name="index" type="number" min="1" value="1">
         </div>
-
+        {% csrf_token %}
         <div class="pure-controls">
-            <label for="cb" class="pure-checkbox">
-                <input id="cb" type="checkbox"> I've read the terms and conditions
-            </label>
-
             <button type="submit" class="pure-button pure-button-primary">Submit</button>
         </div>
     </fieldset>
