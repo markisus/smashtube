@@ -17,12 +17,16 @@
       console.log('Finding sets...');
       return sets_related_to_video(video_url_id, function(data) {
         console.log('Got some data', data.objects);
-        return window.r = new R({
+        window.r = new R({
           el: 'set-list',
           template: template,
           data: {
             sets: data.objects
           }
+        });
+        return r.on('add-player', function(event) {
+          console.log(this.get('character'));
+          return console.log(this.get('player'));
         });
       });
     });

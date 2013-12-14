@@ -1,9 +1,8 @@
 {{#sets}}
 <b>
 {{tournament.name}} {{description}} {{^description}}Set{{/description}} {{index}} ({{game_title.name}})</b> 
-
-<br/>
 <a class="pure-button pure-button-warning">Delete Set</a>
+<br/>
 {{#matches}}
 <table class="pure-table pure-table-bordered">
     <thead>
@@ -46,9 +45,9 @@
 
 <form class="pure-form">
     <fieldset>
-        <input type="text" name="player-name" placeholder="Player (Mango)">
-        <input type="text" name="character-name" placeholder="Character (Fox)">
-        <button type="submit" class="pure-button pure-button-primary">Add Player</button>
+        <input type="text" name="player-name" placeholder="Player (Mango)" value="{{player}}">
+        <input type="text" name="character-name" placeholder="Character (Fox)" value="{{character}}">
+        <a class="pure-button pure-button-primary" on-click='add-player'>Add Player</a>
     </fieldset>
 </form>
 

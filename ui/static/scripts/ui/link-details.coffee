@@ -27,3 +27,7 @@ require ['../main'],
 				data:
 					sets: data.objects
 			)
+
+			r.on 'add-player', (event) ->
+				console.log this.get('character')
+				console.log this.get('player')
