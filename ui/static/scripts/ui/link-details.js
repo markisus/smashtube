@@ -119,10 +119,14 @@
           }
         });
         r.on('copy-match', function(event) {
-          var context, request;
+          var context, num_matches, request, set, set_index;
           context = event.context;
+          set_index = parseInt(event.index['set_index']);
+          set = sets[set_index];
+          num_matches = set.matches.length;
+          console.log(set_index, set, num_matches);
           request = $.post('/copy-match', {
-            match_id: context.id
+            match_id: set.matches[num_matches - 1].id
           });
           return request.done(function(data) {
             return refresh_set(event);

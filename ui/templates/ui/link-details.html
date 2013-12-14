@@ -13,6 +13,12 @@ csrf_token = '{{csrf_token}}';
 <!-- End info provided to client js -->
 
 <h2 class="content-subhead"><a href="{{ video_url_model.video_url }}"> {{ video_url_model.video_url }} </a></h2>
+<form class="pure-form pure-form-aligned" method="post" action="{% url 'delete-link'%}">
+    {% csrf_token %}
+    <input type="text" name="video_url_id" value="{{video_url_model.id}}">
+    <input class="pure-button pure-button-warning" type="submit" value="Delete">
+</form>
+
 <iframe width="560" height="315" src="{{ video_url_model.video_url }}" frameborder="0" allowfullscreen></iframe>
 
 <h2 class="content-subhead">Existing Sets</h2>

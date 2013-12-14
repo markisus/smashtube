@@ -55,12 +55,10 @@
 		<br/>{{.error}}
     </fieldset>
 </form>
-{{ is_last_match(set_index, match_index)}}
-<a class="pure-button pure-button-primary" on-click="copy-match">Duplicate Match</a>
 {{#match_index}}
 <a class="pure-button pure-button-warning" on-click="delete-match">Delete Match</a>
 {{/match_index}}
-
 {{/matches}}
+<a class="pure-button pure-button-primary" on-click="copy-match">Add Another Match</a>
 </div>
 {{/sets}}

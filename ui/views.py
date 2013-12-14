@@ -125,6 +125,10 @@ def delete_player_session(request):
     PlayerSession.objects.get(pk=int(request.POST.get('player_session_id'))).delete()
     return PreviousPage(request)
 
+def delete_link(request):
+    VideoURL.objects.get(pk=int(request.POST['video_url_id'])).delete()
+    return HttpResponseRedirect('/')    
+    
 def edit_match(request):
     print 'Editing match!'
     match_model = Match.objects.get(pk=int(request.POST['match_id']))

@@ -101,8 +101,12 @@ require ['../main'],
 			
 			r.on 'copy-match', (event) ->
 				context = event.context
+				set_index = parseInt(event.index['set_index'])
+				set = sets[set_index]
+				num_matches = set.matches.length
+				console.log set_index, set, num_matches
 				request = $.post '/copy-match',
-					match_id: context.id
+					match_id: set.matches[num_matches-1].id
 				request.done (data) ->
 					refresh_set(event)
 		
