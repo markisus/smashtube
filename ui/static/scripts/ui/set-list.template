@@ -1,1 +1,5 @@
+{{greeting}}
+
+{{#sets}}
 {{tournament}} {{description}} {{index}}
+{{/sets}}

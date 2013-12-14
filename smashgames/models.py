@@ -28,7 +28,7 @@ class VideoURL(models.Model):
     video_url = models.URLField(blank=False, null=False, unique=True)
 
 class Match(models.Model):
-    set = models.ForeignKey(Set, blank=True, null=False)
+    set = models.ForeignKey(Set, blank=True, null=False, related_name='matches')
     index = models.IntegerField(blank=True, null=False, default=1)
     video_url = models.ForeignKey(VideoURL, blank=False, null=False)
     start = models.CharField(blank=True, null=True, max_length=20)

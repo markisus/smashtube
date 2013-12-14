@@ -19,6 +19,7 @@ v1_api.register(SetResource())
 v1_api.register(PlayerResource())
 v1_api.register(PlayerSessionResource())
 v1_api.register(VideoURLResource())
+v1_api.register(MatchResource())
 
 urlpatterns = patterns('',
     # Examples:
