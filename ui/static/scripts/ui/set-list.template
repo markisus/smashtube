@@ -1,8 +1,10 @@
 {{#sets: set_index}}
+
 <b>
 {{tournament.name}} {{description}} {{^description}}Set{{/description}} {{index}} ({{game_title.name}})</b> 
-<a class="pure-button pure-button-warning">Delete Set</a>
-<br/>
+<a class="pure-button pure-button-primary" on-click="hide-set">{{.hidden ? 'Show' : 'Hide'}}</a>
+<a class="pure-button pure-button-warning">Delete</a>
+<div class="{{.hidden ? 'hidden' : 'not-hidden'}}">
 {{#matches: match_index}}
 <table class="pure-table pure-table-bordered">
     <thead>
@@ -16,10 +18,12 @@
 
     <tbody>
         <tr>
-            <td>{{index}}</td>
-            <td>{{start}}</td>
-            <td>{{end}}</td>
-            <td>x</td>
+            <td>{{.editing ? '' : index}}<input class="thin {{.editing ? '' : 'hidden'}}" type="number" min="1" value="{{index}}"></td>
+            <td>{{.editing ? '' : start}}<input class="thin {{.editing ? '' : 'hidden'}}" type="text" value="{{start}}" placeholder="mm:ss"></td>
+            <td>{{.editing ? '' : end}}<input class="thin {{.editing ? '' : 'hidden'}}" type="text" value="{{end}}" placeholder="mm:ss"></td>
+            <td>
+			<a class="pure-button pure-button-primary" on-click="edit-match:{{.editing}}">{{.editing ? 'Save' : 'Edit'}}</a>
+			</td>
         </tr>
     </tbody>
 </table>
@@ -37,7 +41,7 @@
         <tr>
             <td>{{player.name}}</td>
             <td>{{character.name}}</td>
-            <td>x</td>
+            <td><a class='pure-button pure-button-warning' on-click='delete-player'>Delete</a></td>
         </tr>
         {{/player_sessions}}
     </tbody>
@@ -48,8 +52,15 @@
         <input type="text" name="player-name" placeholder="Player (Mango)" value="{{.player}}">
         <input type="text" name="character-name" placeholder="Character (Fox)" value="{{.character}}">
         <a class="pure-button pure-button-primary" on-click='add-player'>Add Player</a>
+		<br/>{{.error}}
     </fieldset>
 </form>
+{{ is_last_match(set_index, match_index)}}
+<a class="pure-button pure-button-primary" on-click="copy-match">Duplicate Match</a>
+{{#match_index}}
+<a class="pure-button pure-button-warning" on-click="delete-match">Delete Match</a>
+{{/match_index}}
 
 {{/matches}}
+</div>
 {{/sets}}

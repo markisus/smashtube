@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from smashgames.models import VideoURL, Tournament, Match, Set, Player, PlayerSession
-from smashconstants.models import GameTitle
+from smashconstants.models import Character, GameTitle
+
 import re
 
 def PreviousPage(request):
@@ -113,26 +114,34 @@ def delete_set(request):
     set_id = int(request.POST.get('set-id'))
     Set.objects.get(pk=set_id).delete()
     return PreviousPage(request)
-
+    
+def delete_match(request):
+    match_id = int(request.POST.get('match_id'))
+    print 'deleting match', match_id
+    Match.objects.get(pk=match_id).delete()
+    return PreviousPage(request)
+    
 def delete_player_session(request):
-    PlayerSession.objects.get(pk=int(request.POST.get('player-session-id'))).delete()
+    PlayerSession.objects.get(pk=int(request.POST.get('player_session_id'))).delete()
     return PreviousPage(request)
 
 def edit_match(request):
-    match_model = Match.objects.get(pk=int(request.POST['match-id']))
+    print 'Editing match!'
+    match_model = Match.objects.get(pk=int(request.POST['match_id']))
     match_model.start = request.POST.get('start', '')
     match_model.end = request.POST.get('end', '')
     match_model.index = int(request.POST.get('index', 1)) if int(request.POST.get('index', 1)) > 0 else 1
     match_model.save()
+    print 'Done editing model!'
     return PreviousPage(request)
 
 def copy_match(request):
     print "Copying match"
-    match_model = Match.objects.get(pk=int(request.POST['match-id']))
+    match_model = Match.objects.get(pk=int(request.POST['match_id']))
     new_index = Match.objects.filter(set=match_model.set).count() + 1
     match_model_copy = Match(set=match_model.set, video_url=match_model.video_url, index=new_index)
     match_model_copy.save()
-    player_session_models = match_model.playersession_set.all()
+    player_session_models = match_model.player_sessions.all()
     for player_session_model in player_session_models:
         player_session_model_copy = PlayerSession(player=player_session_model.player,
                       match=match_model_copy,
@@ -145,10 +154,20 @@ def copy_match(request):
 def submit_player_for_match(request):
     match_model = Match.objects.get(pk=int(request.POST['match_id']))
     
-    player_name = request.POST['player-name']
-    character_name = request.POST['character-name']
-
-    character_model = match_model.set.game_title.character_set.get(name=character_name)
+    try:
+        player_name = request.POST['player_name']
+    except KeyError:
+        return _HttpResponse('Empty name field', status_code=422)
+        
+    try:
+        character_name = request.POST['character_name']
+    except KeyError:
+        return _HttpResponse('Empty character field', status_code=422)
+        
+    try:
+        character_model = match_model.set.game_title.character_set.get(name=character_name)
+    except Character.DoesNotExist as e:
+        return _HttpResponse('No such character: ' + character_name, status_code=422)
 
     try:
         player_model = Player.objects.get(name=player_name)
@@ -193,7 +212,7 @@ def populate(request):
                     'Ness',
                     'Peach',
                     'Pichu',
-                    'Pickachu',
+                    'Pikachu',
                     'Roy',
                     'Samus',
                     'Shiek',

@@ -21,22 +21,122 @@
       console.log(video_url_id);
       console.log('Finding sets...');
       return sets_related_to_video(video_url_id, function(data) {
-        var sets;
+        var refresh_match, refresh_set, sets;
         console.log('Got some data', data.objects);
         sets = data.objects;
         window.r = new R({
           el: 'set-list',
           template: template,
           data: {
-            sets: sets
+            sets: sets,
+            is_last_match: function(set_index, match_index) {
+              var _ref;
+              set_index = parseInt(set_index);
+              match_index = parseInt(match_index);
+              return ((_ref = sets[set_index]) != null ? _ref.matches[match_index + 1] : void 0) === void 0;
+            }
           }
         });
-        return r.on('add-player', function(event) {
-          var character, player;
-          r.set(event.keypath + '.character', '---');
-          character = event.context.character;
-          player = event.context.player;
-          return console.log(event, character, player);
+        refresh_match = function(event) {
+          var match, match_index, query, request, set_index;
+          set_index = parseInt(event.index.set_index);
+          match_index = parseInt(event.index.match_index);
+          console.log("sets are", sets, set_index, match_index);
+          match = sets[set_index].matches[match_index];
+          query = '/api/v1/match/' + match.id;
+          request = $.getJSON(query, {
+            format: 'json'
+          });
+          return request.done(function(data) {
+            r.set('sets.' + set_index + '.matches.' + match_index, data);
+            return console.log("Refreshed", data);
+          });
+        };
+        refresh_set = function(event) {
+          var query, request, set, set_index;
+          set_index = parseInt(event.index.set_index);
+          set = sets[set_index];
+          query = '/api/v1/set/' + set.id;
+          request = $.getJSON(query, {
+            format: 'json'
+          });
+          return request.done(function(data) {
+            return r.set('sets.' + set_index, data);
+          });
+        };
+        r.on('add-player', function(event) {
+          var context, request;
+          context = event.context;
+          request = $.post('/submit-player-for-match', {
+            character_name: context.character,
+            player_name: context.player,
+            match_id: context.id
+          });
+          request.done(function(data) {
+            return refresh_match(event);
+          });
+          return request.fail(function(data) {
+            return r.set(event.keypath + '.error', '! ' + data.responseText);
+          });
+        });
+        r.on('delete-player', function(event) {
+          var context, request;
+          console.log('deleting', event);
+          context = event.context;
+          request = $.post('/delete-player-session', {
+            player_session_id: event.context.id
+          });
+          return request.done(function(data) {
+            return refresh_match(event);
+          });
+        });
+        r.on('hide-set', function(event) {
+          var current;
+          console.log('hiding');
+          current = r.get(event.keypath + '.hidden');
+          console.log('current', current);
+          console.log('keypath', event.keypath);
+          return r.set(event.keypath + '.hidden', !current);
+        });
+        r.on('edit-match', function(event, editing) {
+          var context, request;
+          if (!editing) {
+            return r.set(event.keypath + '.editing', true);
+          } else {
+            context = event.context;
+            request = $.post('/edit-match', {
+              match_id: context.id,
+              start: context.start,
+              end: context.end,
+              index: context.index
+            });
+            request.done(function(data) {
+              return r.set(event.keypath + '.editing', false);
+            });
+            return request.fail(function(data) {
+              return r.set(event.keypath + '.error', data.responseText);
+            });
+          }
+        });
+        r.on('copy-match', function(event) {
+          var context, request;
+          context = event.context;
+          request = $.post('/copy-match', {
+            match_id: context.id
+          });
+          return request.done(function(data) {
+            return refresh_set(event);
+          });
+        });
+        return r.on('delete-match', function(event) {
+          var context, request;
+          context = event.context;
+          request = $.post('/delete-match', {
+            match_id: context.id
+          });
+          return request.done(function(data) {
+            return refresh_set(event);
+          });
         });
       });
     });

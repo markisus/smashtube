@@ -33,6 +33,9 @@ class SetResource(ModelResource):
         authorization = Authorization()
         filtering = {'description': ['icontains'],
                      'matches': ALL_WITH_RELATIONS}
+                     
+    def get_object_list(self, request):
+        return super(SetResource, self).get_object_list(request).distinct()
 
 class MatchResource(ModelResource):
     set = fields.ForeignKey(SetResource, 'set', related_name='matches')
@@ -55,10 +58,11 @@ class PlayerResource(ModelResource):
         filtering = {'name': ['icontains']}
 
 class PlayerSessionResource(ModelResource):
+    match = fields.ForeignKey(MatchResource, 'match')
     player = fields.ForeignKey(PlayerResource, 'player', full=True)
     character = fields.ForeignKey(CharacterResource, 'character', full=True)
     class Meta:
         queryset = PlayerSession.objects.all()
         resource_name = 'player-session'
         authorization = Authorization()
-        filtering = {'name': ['icontains']}
+        filtering = {'match': ALL_WITH_RELATIONS}
