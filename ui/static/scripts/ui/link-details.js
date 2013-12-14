@@ -3,6 +3,11 @@
   require(['../main'], function(main) {
     return require(['jquery', 'ractive', 'text!ui/set-list.template'], function($, R, template) {
       var sets_related_to_video;
+      $.ajaxSetup({
+        data: {
+          csrfmiddlewaretoken: csrf_token
+        }
+      });
       sets_related_to_video = function(video_url_id, success) {
         var query;
         console.log('About to do the query');
@@ -16,17 +21,22 @@
       console.log(video_url_id);
       console.log('Finding sets...');
       return sets_related_to_video(video_url_id, function(data) {
+        var sets;
         console.log('Got some data', data.objects);
+        sets = data.objects;
         window.r = new R({
           el: 'set-list',
           template: template,
           data: {
-            sets: data.objects
+            sets: sets
           }
         });
         return r.on('add-player', function(event) {
-          console.log(this.get('character'));
-          return console.log(this.get('player'));
+          var character, player;
+          r.set(event.keypath + '.character', '---');
+          character = event.context.character;
+          player = event.context.player;
+          return console.log(event, character, player);
         });
       });
     });

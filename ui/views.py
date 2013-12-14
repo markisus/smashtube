@@ -142,8 +142,8 @@ def copy_match(request):
         player_session_model_copy.save()
     return PreviousPage(request)
 
-def submit_player_for_match(request, match_id):
-    match_model = Match.objects.get(pk=int(match_id))
+def submit_player_for_match(request):
+    match_model = Match.objects.get(pk=int(request.POST['match_id']))
     
     player_name = request.POST['player-name']
     character_name = request.POST['character-name']
