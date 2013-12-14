@@ -6,6 +6,7 @@ from tastypie.validation import FormValidation
 from tastypie import fields
 from models import Tournament, Set, Match, VideoURL, Player, PlayerSession
 from forms import TournamentForm
+from smashconstants.api import GameTitleResource, CharacterResource
 
 class TournamentResource(ModelResource):
     class Meta:
@@ -23,8 +24,9 @@ class VideoURLResource(ModelResource):
         filtering = {'id': ALL}
 
 class SetResource(ModelResource):
-    tournament = fields.ForeignKey(TournamentResource, 'tournament')
-    matches = fields.ToManyField('smashgames.api.MatchResource', 'matches')
+    tournament = fields.ForeignKey(TournamentResource, 'tournament', full=True)
+    matches = fields.ToManyField('smashgames.api.MatchResource', 'matches', full=True)
+    game_title = fields.ForeignKey(GameTitleResource, 'game_title', full=True)
     class Meta:
         queryset = Set.objects.all()
         resource_name = 'set'
@@ -35,6 +37,7 @@ class SetResource(ModelResource):
 class MatchResource(ModelResource):
     set = fields.ForeignKey(SetResource, 'set', related_name='matches')
     video_url = fields.ForeignKey(VideoURLResource, 'video_url')
+    player_sessions = fields.ToManyField('smashgames.api.PlayerSessionResource', 'player_sessions', full=True)
 
     class Meta:
         queryset = Match.objects.all()
@@ -52,6 +55,8 @@ class PlayerResource(ModelResource):
         filtering = {'name': ['icontains']}
 
 class PlayerSessionResource(ModelResource):
+    player = fields.ForeignKey(PlayerResource, 'player', full=True)
+    character = fields.ForeignKey(CharacterResource, 'character', full=True)
     class Meta:
         queryset = PlayerSession.objects.all()
         resource_name = 'player-session'

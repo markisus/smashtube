@@ -1,5 +1,56 @@
-{{greeting}}
-
 {{#sets}}
-{{tournament}} {{description}} {{index}}
+<b>
+{{tournament.name}} {{description}} {{^description}}Set{{/description}} {{index}} ({{game_title.name}})</b> 
+
+<br/>
+<a class="pure-button pure-button-warning">Delete Set</a>
+{{#matches}}
+<table class="pure-table pure-table-bordered">
+    <thead>
+        <tr>
+            <th>Match #</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>{{index}}</td>
+            <td>{{start}}</td>
+            <td>{{end}}</td>
+            <td>x</td>
+        </tr>
+    </tbody>
+</table>
+<table class="pure-table pure-table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Character</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {{#player_sessions}}
+        <tr>
+            <td>{{player.name}}</td>
+            <td>{{character.name}}</td>
+            <td>x</td>
+        </tr>
+        {{/player_sessions}}
+    </tbody>
+</table>
+
+<form class="pure-form">
+    <fieldset>
+        <input type="text" name="player-name" placeholder="Player (Mango)">
+        <input type="text" name="character-name" placeholder="Character (Fox)">
+        <button type="submit" class="pure-button pure-button-primary">Add Player</button>
+    </fieldset>
+</form>
+
+{{/matches}}
 {{/sets}}

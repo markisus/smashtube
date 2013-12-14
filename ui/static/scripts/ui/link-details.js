@@ -8,7 +8,7 @@
         console.log('About to do the query');
         query = '/api/v1/set/';
         return $.getJSON(query, {
-          match__video_url: video_url_id,
+          matches__video_url__id: video_url_id,
           format: 'json'
         }, success);
       };
@@ -21,8 +21,7 @@
           el: 'set-list',
           template: template,
           data: {
-            sets: data.objects,
-            greeting: 'hello!'
+            sets: data.objects
           }
         });
       });

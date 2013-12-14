@@ -2,6 +2,10 @@
             background: rgb(223, 117, 20); /* this is an orange */
 			color: #fff;
         }
+a.pure-button, a:hover.pure-button, a:focus.pure-button {
+    color: #fff;
+    text-decoration: none;
+}
 
 a {
   color: #0088cc;

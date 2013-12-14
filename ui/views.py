@@ -74,7 +74,7 @@ def link_details(request, video_id):
         return HttpResponseNotFound("Seems like this don't exist?")
 
     # Get sets related to this link
-    set_models = Set.objects.filter(match__video_url=video_url_model).distinct()
+    set_models = Set.objects.filter(matches__video_url=video_url_model).distinct()
     return render(request, 'ui/link-details.html', {'video_url_model': video_url_model, 'set_models':set_models})
 
 def submit_set_for_link(request, link_id):

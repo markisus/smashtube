@@ -1,7 +1,7 @@
 from django.db import models
 from smashconstants.models import Character, GameTitle, Stage
 from smashtube.util import nontrivial as n, str_or_else as s
-
+ 
 class Player(models.Model):
     name = models.CharField(blank=False, null=False, max_length=50)
     mains = models.ManyToManyField(Character)
@@ -47,7 +47,7 @@ class PlayerSession(models.Model):
                 ('D', 'D'),
              )
     player = models.ForeignKey(Player)
-    match = models.ForeignKey(Match)
+    match = models.ForeignKey(Match, related_name='player_sessions')
     character = models.ForeignKey(Character)
     team = models.CharField(max_length=1, choices=TEAMS, blank=True, null=False)
     index = models.IntegerField(blank=False, null=False, default=1)
