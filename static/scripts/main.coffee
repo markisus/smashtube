@@ -6,5 +6,9 @@ requirejs.config
 		ractive: 'Ractive'
 		throttle: 'jquery-throttle.min'
 		typeahead: 'typeahead.min'
-
+	shim:
+		typeahead:
+			deps: ['jquery']
+		throttle:
+			deps: ['jquery']
 console.log 'Loaded main config'
