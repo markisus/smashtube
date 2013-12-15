@@ -61,4 +61,5 @@
 {{/matches}}
 <a class="pure-button pure-button-primary" on-click="copy-match">Add Another Match</a>
 </div>
+<hr/>
 {{/sets}}

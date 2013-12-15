@@ -1,12 +1,31 @@
 require ['../main'], 
 (main) ->
 	require [
-		'jquery', 
+		'domReady',
+		'order!jquery', 
 		'ractive',
-		'text!ui/set-list.template'], ($, R, template) ->
+		'text!ui/set-list.template',
+		'order!typeahead'], (ready, $, R, template, typeahead) ->
         
 		$.ajaxSetup data:
 						csrfmiddlewaretoken: csrf_token
+		
+		$('#tournament').typeahead(
+			prefetch: 
+				url: '/api/v1/tournament'
+				filter: (data) ->
+					console.log data.objects
+					data.objects
+			valueKey: 'name'
+		)
+		
+		$('#game-title').typeahead(
+			prefetch:
+				url: '/api/v1/gametitle'
+				filter: (data) ->
+					data.objects
+			valueKey: 'name'
+		)
 
 		sets_related_to_video = (video_url_id, success) ->
 			console.log 'About to do the query'

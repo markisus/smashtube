@@ -5,5 +5,6 @@ requirejs.config
 		underscore: 'lodash.min'
 		ractive: 'Ractive'
 		throttle: 'jquery-throttle.min'
+		typeahead: 'typeahead.min'
 
 console.log 'Loaded main config'
