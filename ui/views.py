@@ -8,6 +8,9 @@ import re
 def PreviousPage(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+def scratch(request):
+     return render(request, 'ui/scratch.html')
+     
 # Create your views here.
 def index(request):
     # character - character

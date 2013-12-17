@@ -14,5 +14,6 @@ urlpatterns = patterns('',
     url(r'delete-link$', views.delete_link, name='delete-link'),
     url(r'link-details/(\d+)$', views.link_details, name='link-details'),
     url(r'update$', views.update, name='update'), 
-    url(r'populate$', views.populate, name='populate')
+    url(r'populate$', views.populate, name='populate'),
+    url(r'scratch$', views.scratch, name='scratch')
 )

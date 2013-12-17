@@ -2,25 +2,18 @@ require ['../main'],
 (main) ->
 	require [
 		'domReady',
+		'jquery'
 		'ractive',
 		'text!ui/set-list.template',
-		'ui/autocompletes/game-title-autocomplete'], (ready, R, template, gtauto) ->
+		'ui/autocompletes/tournament',
+		'ui/autocompletes/character-autocomplete'], 
+	(ready, $, R, template, gtauto, charauto) ->
         
 		$.ajaxSetup data:
 						csrfmiddlewaretoken: csrf_token
 		
 		gtauto('#tournament')
 		
-		###
-		$('#tournament').typeahead(
-			prefetch: 
-				url: '/api/v1/tournament'
-				filter: (data) ->
-					console.log data.objects
-					data.objects
-			valueKey: 'name'
-		)
-		###
 		
 		sets_related_to_video = (video_url_id, success) ->
 			console.log 'About to do the query'
@@ -29,10 +22,6 @@ require ['../main'],
 				matches__video_url__id: video_url_id,
 				format: 'json'
 			}, success
-		
-		console.log 'Hello world!'
-		console.log video_url_id
-		console.log 'Finding sets...'
 
 		sets_related_to_video video_url_id, (data) ->
 			console.log 'Got some data', data.objects
@@ -130,4 +119,8 @@ require ['../main'],
 					match_id: context.id
 				request.done (data) ->
 					refresh_set(event)
+					
+			r.on 'load', (event) ->
+				alert 'Okay!'
+				console.log "something loaded!"
 				

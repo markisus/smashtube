@@ -6,7 +6,7 @@
 <a class="pure-button pure-button-warning">Delete</a>
 <div class="{{.hidden ? 'hidden' : 'not-hidden'}}">
 {{#matches: match_index}}
-<table class="pure-table pure-table-bordered">
+<table class="pure-table pure-table-bordered" proxy-load="load">
     <thead>
         <tr>
             <th>Match #</th>
@@ -50,7 +50,7 @@
 <form class="pure-form">
     <fieldset>
         <input type="text" name="player-name" placeholder="Player (Mango)" value="{{.player}}">
-        <input type="text" name="character-name" placeholder="Character (Fox)" value="{{.character}}">
+        <input proxy-load='character' class="character-select" type="text" name="character-name" placeholder="Character (Fox)" value="{{.character}}">
         <a class="pure-button pure-button-primary" on-click='add-player'>Add Player</a>
 		<br/>{{.error}}
     </fieldset>

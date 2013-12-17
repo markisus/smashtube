@@ -10,14 +10,16 @@
       });
       console.log("Binding autocomplete to", input_id);
       console.log("Finding dom element", $(input_id));
-      return $(input_id).typeahead({
-        prefetch: {
-          url: '/api/v1/player',
-          filter: function(data) {
-            return data.objects;
-          }
-        },
-        valueKey: 'name'
+      return $(document).on('ready', input_id, function() {
+        return this.typeahead({
+          prefetch: {
+            url: '/api/v1/player',
+            filter: function(data) {
+              return data.objects;
+            }
+          },
+          valueKey: 'name'
+        });
       });
     };
   });

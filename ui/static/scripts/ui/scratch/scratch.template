@@ -1,0 +1,4 @@
+{{#items:i}}
+<div proxy-load="loaded">
+</div>
+{{/items}}
