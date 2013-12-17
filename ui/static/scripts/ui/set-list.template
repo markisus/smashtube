@@ -3,7 +3,7 @@
 <b>
 {{tournament.name}} {{description}} {{^description}}Set{{/description}} {{index}} ({{game_title.name}})</b> 
 <a class="pure-button pure-button-primary" on-click="hide-set">{{.hidden ? 'Show' : 'Hide'}}</a>
-<a class="pure-button pure-button-warning">Delete</a>
+<a class="pure-button pure-button-warning" on-click="delete-set">Delete</a>
 <div class="{{.hidden ? 'hidden' : 'not-hidden'}}">
 {{#matches: match_index}}
 <table class="pure-table pure-table-bordered" proxy-load="load">

@@ -88,6 +88,20 @@
             return refresh_match(event);
           });
         });
+        r.on('delete-set', function(event) {
+          var context, request, set_id;
+          context = event.context;
+          set_id = context.id;
+          request = $.post('/delete-set', {
+            set_id: set_id
+          });
+          return request.done(function(data) {
+            var set_index;
+            set_index = event.index.set_index;
+            sets = r.get('sets');
+            return sets.splice(set_index, 1);
+          });
+        });
         r.on('hide-set', function(event) {
           var current;
           console.log('hiding');

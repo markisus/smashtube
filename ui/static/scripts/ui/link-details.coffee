@@ -79,6 +79,16 @@ require ['../main'],
 					player_session_id: event.context.id
 				request.done (data) ->
 					refresh_match(event)
+			
+			r.on 'delete-set', (event) ->
+				context = event.context
+				set_id = context.id
+				request = $.post '/delete-set',
+					set_id: set_id
+				request.done (data) ->
+					set_index = event.index.set_index
+					sets = r.get('sets')
+					sets.splice(set_index, 1)
 					
 			r.on 'hide-set', (event) ->
 				console.log 'hiding'

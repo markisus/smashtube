@@ -114,9 +114,9 @@ def submit_set_for_link(request, link_id):
     return PreviousPage(request)
  
 def delete_set(request):
-    set_id = int(request.POST.get('set-id'))
+    set_id = int(request.POST.get('set_id'))
     Set.objects.get(pk=set_id).delete()
-    return PreviousPage(request)
+    return HttpResponse("ok")
     
 def delete_match(request):
     match_id = int(request.POST.get('match_id'))
