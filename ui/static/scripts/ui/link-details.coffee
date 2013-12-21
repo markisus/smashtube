@@ -2,13 +2,16 @@ require ['../main'],
 (main) ->
 	require [
 		'domReady',
-		'jquery'
+		'jquery',
+		'typeahead',
 		'ractive',
 		'text!ui/set-list.template',
-		'ui/autocompletes/tournament',
-		'ui/autocompletes/character-autocomplete'], 
-	(ready, $, R, template, gtauto, charauto) ->
+		'ui/autocompletes/tournament'], 
+	(ready, $, t, R, template, gtauto) ->
         
+		$(document).on 'ready', '.select-character', () ->
+			alert 'alert select character!'
+		
 		$.ajaxSetup data:
 						csrfmiddlewaretoken: csrf_token
 		
@@ -27,6 +30,28 @@ require ['../main'],
 			console.log 'Got some data', data.objects
 			sets = data.objects
 			
+			R.transitions.player_select = (el, complete) ->
+				console.log $(el).typeahead({
+					prefetch:
+						url: '/api/v1/player'
+						filter: (data) ->
+							data.objects
+					valueKey: 'name'
+				})
+				complete()
+				
+			R.transitions.character_select = (el, complete) ->
+				$.ajax
+				console.log $(el).typeahead({
+					prefetch:
+						url: '/api/v1/character'
+						filter: (data) ->
+							console.log "filtering", data
+							data.objects
+					valueKey: 'name'
+				})
+				complete()
+				
 			window.r = new R(
 				el: 'set-list'
 				template: template
@@ -36,6 +61,11 @@ require ['../main'],
 						set_index = parseInt(set_index)
 						match_index = parseInt(match_index)
 						sets[set_index]?.matches[match_index+1] == undefined
+					attach_typeaheads: (match_index) ->
+						$('.select-player').typeahead(
+							{local: ['Mango']}
+						)
+						return ''
 			)
 			
 			refresh_match = (event) ->
@@ -63,6 +93,7 @@ require ['../main'],
 			
 			r.on 'add-player', (event) ->
 				context = event.context
+				console.log 'add player', event
 				request = $.post '/submit-player-for-match', 
 					character_name: context.character
 					player_name: context.player
@@ -130,7 +161,4 @@ require ['../main'],
 				request.done (data) ->
 					refresh_set(event)
 					
-			r.on 'load', (event) ->
-				alert 'Okay!'
-				console.log "something loaded!"
 				

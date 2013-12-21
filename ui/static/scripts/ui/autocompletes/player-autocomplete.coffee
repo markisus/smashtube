@@ -3,20 +3,19 @@ define [
 	'typeahead'
 	],
 	($, typeahead) ->
-		console.log 'Preparing autcomplete'
+		console.log 'Preparing player autcomplete'
 		(input_id) ->
 			$.ajaxSetup(
 				data:
 					format: 'json'
 			)
-			console.log "Binding autocomplete to", input_id
-			console.log "Finding dom element", $(input_id)
-			$(document).on('ready', input_id, () ->
-				this.typeahead(
+			console.log "Binding player autocomplete to", input_id
+			console.log "Finding dom element", $(input_id), $('.select-player')
+			$(input_id).typeahead(
 					prefetch:
 						url: '/api/v1/player'
 						filter: (data) ->
 							data.objects
 					valueKey: 'name'
-				)
+					local: ['abc']
 			)
