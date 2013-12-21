@@ -26,6 +26,7 @@ class Set(models.Model):
 
 class VideoURL(models.Model):
     video_url = models.URLField(blank=False, null=False, unique=True)
+    embed_url = models.URLField(blank=True, null=True, unique=True)
 
 class Match(models.Model):
     set = models.ForeignKey(Set, blank=True, null=False, related_name='matches')

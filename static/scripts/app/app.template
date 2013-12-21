@@ -1,0 +1,26 @@
+<div class="submission"/>
+<h2>Submissions and Updates</h2>
+<div style="{{^(step == 'link-entry')}}display:none{{/link_entry}}">
+<h3>1. Link Entry</h3>
+Youtube Link <br/>
+<input type="text" value="{{link}}"/>
+<button disabled="{{#error}}true{{/error}}" proxy-click="select-link">Next</button>
+{{#error}}<br/>{{error}}{{/error}}
+</div>
+
+<div style="{{^(step == 'tournament-entry')}}display:none{{/tournament_entry}}">
+<h3>2. Tournament Entry</h3>
+Tournament Name <br/>
+<input type="text" value="{{tournament}}"/>
+<button disabled="{{#error}}true{{/error}}" proxy-click="new-tournament">New</button>
+{{#error}}<br/>{{error}}{{/error}}
+<br/>
+Suggestions:<br/>
+<ul>
+{{#tournaments}}
+<li>{{name}}</li>
+{{/tournaments}}
+</ul>
+</div>
+
+</div>

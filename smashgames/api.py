@@ -21,7 +21,8 @@ class VideoURLResource(ModelResource):
         queryset = VideoURL.objects.all()
         resource_name = 'video-url'
         authorization = Authorization()
-        filtering = {'id': ALL}
+        filtering = {'id': ALL,
+                    'video_url':ALL}
 
 class SetResource(ModelResource):
     tournament = fields.ForeignKey(TournamentResource, 'tournament', full=True)
