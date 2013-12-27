@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
-from smashgames.models import VideoURL, Tournament, Match, Set, Player, PlayerSession
+from smashgames.models import Tournament, Match, Set, Player, PlayerSession
 from smashconstants.models import Character, GameTitle
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -28,14 +28,6 @@ def submit_link(request):
             tournament_model = Tournament(name=tournament)
             tournament_model.save()
     print 'Tournament Okay'
-    
-    # Create link
-    try:
-        video_url_model = VideoURL.objects.get(video_url=link)
-    except VideoURL.DoesNotExist:
-        video_url_model = VideoURL(video_url=link)
-        video_url_model.save()
-    print 'Link Okay'
         
     # Get Game Title
     game_title_model = GameTitle.objects.get(name=game_title)
@@ -69,7 +61,7 @@ def submit_link(request):
     # Make Matches
     matches = []
     for match_number in range(min(10, num_matches)):
-        match_model = Match(set=set_model, index=match_number+1, video_url=video_url_model)
+        match_model = Match(set=set_model, index=match_number+1, video_url=link)
         match_model.save()
         matches.append(match_model)
     print 'Matches Okay'
