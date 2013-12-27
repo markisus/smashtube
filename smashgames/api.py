@@ -16,14 +16,6 @@ class TournamentResource(ModelResource):
         validation = FormValidation(form_class=TournamentForm)
         filtering = {'name': ['icontains']}
 
-class VideoURLResource(ModelResource):
-    class Meta:
-        queryset = VideoURL.objects.all()
-        resource_name = 'video-url'
-        authorization = Authorization()
-        filtering = {'id': ALL,
-                    'video_url':ALL}
-
 class SetResource(ModelResource):
     tournament = fields.ForeignKey(TournamentResource, 'tournament', full=True, null=True)
     matches = fields.ToManyField('smashgames.api.MatchResource', 'matches', full=True)
