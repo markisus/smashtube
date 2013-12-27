@@ -13,3 +13,11 @@ require ['../main'],
 			el: 'app'
 			template: template
 		)
+		
+		$.getJSON '/api/v1/set/',
+				format: 'json',
+				order_by: '-id',
+				(data) ->
+					console.log r.get('sets')
+					r.set('sets', data.objects)
+					console.log r.get('sets')

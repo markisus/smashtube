@@ -1,1 +1,14 @@
 This is the index
+<h2>Latest Sets</h2>
+{{#sets}}
+Game: {{game_title.name}} <br/>
+Tournament: {{tournament.name}} <br/>
+Description: {{description}} <br/>
+
+{{#matches}}
+{{#player_sessions}}
+{{player.name}} {{character.name}}
+{{/player_sessions}}
+{{/matches}}
+<hr/>
+{{/sets}}

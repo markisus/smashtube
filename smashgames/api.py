@@ -34,6 +34,7 @@ class SetResource(ModelResource):
         authorization = Authorization()
         filtering = {'description': ['icontains'],
                      'matches': ALL_WITH_RELATIONS}
+        ordering = ['id']
                      
     def get_object_list(self, request):
         return super(SetResource, self).get_object_list(request).distinct()
