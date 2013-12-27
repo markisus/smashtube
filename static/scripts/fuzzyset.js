@@ -1,3 +1,4 @@
+define(function(require, exports, module) {
 (function() {
 
 var FuzzySet = function(arr, useLevenshtein, gramSizeLower, gramSizeUpper) {
@@ -290,3 +291,4 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 })();
+});

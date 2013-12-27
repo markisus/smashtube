@@ -8,8 +8,9 @@ from models import *
 class GameTitleResource(ModelResource):
     class Meta:
         queryset = GameTitle.objects.all()
-        resource_name = 'gametitle'
-        filtering = {'id': ALL}
+        resource_name = 'game-title'
+        filtering = {'id': ALL,
+                    'name': ALL}
 
 class CharacterResource(ModelResource):
     games = fields.ToManyField(GameTitleResource, 'games')
@@ -22,4 +23,4 @@ class CharacterResource(ModelResource):
 class CharacterIconResource(ModelResource):
     class Meta:
         queryset = CharacterIcon.objects.all()
-        resource_name = 'charactericon'
+        resource_name = 'character-icon'

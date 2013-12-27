@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, include, url
+import views
 from django.conf import settings
 from tastypie.api import Api
 from smashconstants.api import GameTitleResource, CharacterResource, CharacterIconResource
@@ -25,4 +26,5 @@ urlpatterns = patterns('',
     url(r'^api/', include(v1_api.urls)),
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^submit-link', views.submit_link, name='submit-link')
 )

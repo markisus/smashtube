@@ -189,9 +189,6 @@ def submit_player_for_match(request):
     player_session_model.save()
     return PreviousPage(request)
     
-
-
-
 def update(request):
     return render(request, 'ui/update.html')
 

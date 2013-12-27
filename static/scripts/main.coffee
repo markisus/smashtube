@@ -6,6 +6,7 @@ requirejs.config
 		ractive: 'Ractive'
 		throttle: 'jquery-throttle.min'
 		typeahead: 'typeahead.min'
+		fuzzyset: 'fuzzyset'
 	shim:
 		typeahead:
 			deps: ['jquery']

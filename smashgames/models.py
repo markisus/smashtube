@@ -19,7 +19,7 @@ class Set(models.Model):
     tournament = models.ForeignKey(Tournament, blank=True, null=True)
     description = models.CharField(blank=True, null=False, max_length=50)
     game_title = models.ForeignKey(GameTitle, blank=False, null=False)
-    index = models.IntegerField(blank=False, null=False)
+    index = models.IntegerField(blank=False, null=False, default=1)
 
     def __unicode__(self):
         return ", ".join(n(["Set %d" % self.index, s(self.description), s(self.tournament)]))

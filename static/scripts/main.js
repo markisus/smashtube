@@ -7,7 +7,8 @@
       underscore: 'lodash.min',
       ractive: 'Ractive',
       throttle: 'jquery-throttle.min',
-      typeahead: 'typeahead.min'
+      typeahead: 'typeahead.min',
+      fuzzyset: 'fuzzyset'
     },
     shim: {
       typeahead: {
