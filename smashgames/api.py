@@ -20,7 +20,6 @@ class SetResource(ModelResource):
     tournament = fields.ForeignKey(TournamentResource, 'tournament', full=True, null=True)
     matches = fields.ToManyField('smashgames.api.MatchResource', 'matches', full=True)
     game_title = fields.ForeignKey(GameTitleResource, 'game_title', full=True)
-    player_sessions = fields.ToManyField('smashgames.api.PlayerSessionResource', 'player_sessions', full=True)
     
     class Meta:
         queryset = Set.objects.all()
@@ -35,6 +34,7 @@ class SetResource(ModelResource):
 
 class MatchResource(ModelResource):
     set = fields.ForeignKey(SetResource, 'set', related_name='matches')
+    player_sessions = fields.ToManyField('smashgames.api.PlayerSessionResource', 'player_sessions', full=True)
 
     class Meta:
         queryset = Match.objects.all()
