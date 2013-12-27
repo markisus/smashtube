@@ -26,5 +26,6 @@ urlpatterns = patterns('',
     url(r'^api/', include(v1_api.urls)),
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^submissions', views.submissions, name='submissions'),
     url(r'^submit-link', views.submit_link, name='submit-link')
 )

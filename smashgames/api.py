@@ -25,7 +25,7 @@ class VideoURLResource(ModelResource):
                     'video_url':ALL}
 
 class SetResource(ModelResource):
-    tournament = fields.ForeignKey(TournamentResource, 'tournament', full=True)
+    tournament = fields.ForeignKey(TournamentResource, 'tournament', full=True, null=True)
     matches = fields.ToManyField('smashgames.api.MatchResource', 'matches', full=True)
     game_title = fields.ForeignKey(GameTitleResource, 'game_title', full=True)
     class Meta:

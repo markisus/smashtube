@@ -5,6 +5,9 @@ from django.views.decorators.csrf import csrf_exempt
 from smashgames.models import VideoURL, Tournament, Match, Set, Player, PlayerSession
 from smashconstants.models import Character, GameTitle
 
+def submissions(request):
+     return render(request, 'submissions.html')
+
 @csrf_exempt
 def submit_link(request):
     data = json.loads(request.body)

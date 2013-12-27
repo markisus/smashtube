@@ -7,7 +7,7 @@ require ['../main'],
 		'ractive',
 		'underscore',
 		'fuzzyset',
-		'text!app/app.template'], 
+		'text!app/submissions.template'], 
 	(ready, $, typeahead, Ractive, _, FuzzySet, template) ->
 		
 		r = new Ractive(
