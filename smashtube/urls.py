@@ -1,9 +1,8 @@
 from django.conf.urls import patterns, include, url
-import views
 from django.conf import settings
 from tastypie.api import Api
 from smashconstants.api import GameTitleResource, CharacterResource, CharacterIconResource
-from smashgames.api import TournamentResource, SetResource, MatchResource, PlayerResource, PlayerSessionResource, VideoURLResource
+from smashgames.api import TournamentResource, SetResource, MatchResource, PlayerResource, PlayerSessionResource
 import ui.urls
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -17,7 +16,6 @@ v1_api.register(TournamentResource())
 v1_api.register(SetResource())
 v1_api.register(PlayerResource())
 v1_api.register(PlayerSessionResource())
-v1_api.register(VideoURLResource())
 v1_api.register(MatchResource())
 
 urlpatterns = patterns('',

@@ -101,8 +101,7 @@ def index(request):
     # player - character
     # player - player
 
-    latest = VideoURL.objects.all()
-    return render(request, 'index.html', {'latest': latest})
+    return render(request, 'index.html')
 
 def embedify_youtube_link(link):
     print link

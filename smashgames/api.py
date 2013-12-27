@@ -4,7 +4,7 @@ from tastypie.resources import ModelResource
 from tastypie.authorization import Authorization
 from tastypie.validation import FormValidation
 from tastypie import fields
-from models import Tournament, Set, Match, VideoURL, Player, PlayerSession
+from models import Tournament, Set, Match, Player, PlayerSession
 from forms import TournamentForm
 from smashconstants.api import GameTitleResource, CharacterResource
 
@@ -35,7 +35,6 @@ class SetResource(ModelResource):
 
 class MatchResource(ModelResource):
     set = fields.ForeignKey(SetResource, 'set', related_name='matches')
-    video_url = fields.ForeignKey(VideoURLResource, 'video_url', full=True)
 
     class Meta:
         queryset = Match.objects.all()
@@ -43,7 +42,7 @@ class MatchResource(ModelResource):
         authorization = Authorization()
         filtering = {'name': ['icontains'],
                      'id': ALL,
-                     'video_url': ALL_WITH_RELATIONS}
+                     'video_url': ['icontains']}
 
 class PlayerResource(ModelResource):
     class Meta:

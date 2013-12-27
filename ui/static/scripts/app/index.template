@@ -1,22 +1,5 @@
-<h2>Filter</h2>
-Player <input type="text"/>
-Character <input type="text"/>
-<button>Add Filter</button>
+<h2>Tournaments</h2>
+
 <h2>Sets</h2>
-{{#sets}}
-{{tournament.name}} - {{description}} ({{game_title.name}})<br/>
-{{#teams:team_name}}
-	{{#.}}
-		{{player.name}} {{character.name}}; 
-	{{/.}}
-	<br/>
-{{/teams}} 
-<ul>
-{{#matches}}
-<li>
-<a href="{{video_url.video_url}}">Match: {{index}}</a>
-</li>
-{{/matches}}
-</ul>
-	<hr/>
-{{/sets}}
+
+<h2>Players</h2>
