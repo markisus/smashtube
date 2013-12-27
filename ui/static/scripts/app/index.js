@@ -11,9 +11,17 @@
         format: 'json',
         order_by: '-id'
       }, function(data) {
-        console.log(r.get('sets'));
-        r.set('sets', data.objects);
-        return console.log(r.get('sets'));
+        var set, sets, teams, _i, _len;
+        sets = data.objects;
+        for (_i = 0, _len = sets.length; _i < _len; _i++) {
+          set = sets[_i];
+          teams = _(set.player_sessions).groupBy(function(ps) {
+            return ps.team;
+          }).value();
+          set.teams = teams;
+        }
+        console.log(sets);
+        return r.set('sets', data.objects);
       });
     });
   });

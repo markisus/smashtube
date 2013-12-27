@@ -28,6 +28,8 @@ class SetResource(ModelResource):
     tournament = fields.ForeignKey(TournamentResource, 'tournament', full=True, null=True)
     matches = fields.ToManyField('smashgames.api.MatchResource', 'matches', full=True)
     game_title = fields.ForeignKey(GameTitleResource, 'game_title', full=True)
+    player_sessions = fields.ToManyField('smashgames.api.PlayerSessionResource', 'player_sessions', full=True)
+    
     class Meta:
         queryset = Set.objects.all()
         resource_name = 'set'
@@ -41,8 +43,7 @@ class SetResource(ModelResource):
 
 class MatchResource(ModelResource):
     set = fields.ForeignKey(SetResource, 'set', related_name='matches')
-    video_url = fields.ForeignKey(VideoURLResource, 'video_url')
-    player_sessions = fields.ToManyField('smashgames.api.PlayerSessionResource', 'player_sessions', full=True)
+    video_url = fields.ForeignKey(VideoURLResource, 'video_url', full=True)
 
     class Meta:
         queryset = Match.objects.all()
@@ -60,7 +61,7 @@ class PlayerResource(ModelResource):
         filtering = {'name': ['icontains']}
 
 class PlayerSessionResource(ModelResource):
-    match = fields.ForeignKey(MatchResource, 'match')
+    set = fields.ForeignKey(SetResource, 'set')
     player = fields.ForeignKey(PlayerResource, 'player', full=True)
     character = fields.ForeignKey(CharacterResource, 'character', full=True)
     class Meta:

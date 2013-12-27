@@ -42,6 +42,18 @@ def submit_link(request):
     print 'Game Title Okay'
     
     # Create Set
+    try:
+        set_model = Set.objects.get(
+            tournament=tournament_model,
+            description=set_description,
+            game_title=game_title_model)
+    except Set.DoesNotExist:
+        set_model = Set(
+            tournament=tournament_model if tournament else None,
+            description=set_discription,
+            game_title=game_title_model
+        )
+        
     if tournament:
         set_model = Set(
             tournament=tournament_model, 
@@ -57,12 +69,13 @@ def submit_link(request):
     # Make Matches
     matches = []
     for match_number in range(min(10, num_matches)):
-        match_model = Match(set=set_model, index=match_number, video_url=video_url_model)
+        match_model = Match(set=set_model, index=match_number+1, video_url=video_url_model)
         match_model.save()
         matches.append(match_model)
     print 'Matches Okay'
     
     # Save Teams
+    team_number = 0
     for team in teams:
         for player_session in team:
             player, character = player_session['player'], player_session['character']
@@ -72,15 +85,13 @@ def submit_link(request):
                 player_model = Player(name=player)
                 player_model.save()
             character_model = Character.objects.get(name=character)
-            match_number = 0
-            for match in matches:
-                player_session_model = PlayerSession(
+            player_session_model = PlayerSession(
                     character=character_model,
                     player=player_model, 
-                    match=match_model,
-                    team=PlayerSession.TEAMS[match_number][0])
-                player_session_model.save()
-                match_number += 1
+                    set=set_model,
+                    team=PlayerSession.TEAMS[team_number][0])
+            player_session_model.save()
+        team_number += 1
     print 'Teams Okay'
     
     print data

@@ -18,6 +18,9 @@ require ['../main'],
 				format: 'json',
 				order_by: '-id',
 				(data) ->
-					console.log r.get('sets')
+					sets = data.objects
+					for set in sets						
+						teams = _(set.player_sessions).groupBy((ps) -> ps.team).value()
+						set.teams = teams
+					console.log sets
 					r.set('sets', data.objects)
-					console.log r.get('sets')

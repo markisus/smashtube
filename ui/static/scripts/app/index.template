@@ -1,14 +1,22 @@
-This is the index
-<h2>Latest Sets</h2>
+<h2>Filter</h2>
+Player <input type="text"/>
+Character <input type="text"/>
+<button>Add Filter</button>
+<h2>Sets</h2>
 {{#sets}}
-Game: {{game_title.name}} <br/>
-Tournament: {{tournament.name}} <br/>
-Description: {{description}} <br/>
-
+{{tournament.name}} - {{description}} ({{game_title.name}})<br/>
+{{#teams:team_name}}
+	{{#.}}
+		{{player.name}} {{character.name}}; 
+	{{/.}}
+	<br/>
+{{/teams}} 
+<ul>
 {{#matches}}
-{{#player_sessions}}
-{{player.name}} {{character.name}}
-{{/player_sessions}}
+<li>
+<a href="{{video_url.video_url}}">Match: {{index}}</a>
+</li>
 {{/matches}}
-<hr/>
+</ul>
+	<hr/>
 {{/sets}}
