@@ -13,7 +13,7 @@ class GameTitleResource(ModelResource):
                     'name': ALL}
 
 class CharacterResource(ModelResource):
-    games = fields.ToManyField(GameTitleResource, 'games')
+    games = fields.ToManyField(GameTitleResource, 'games', full=True)
     
     class Meta:
         queryset = Character.objects.all()

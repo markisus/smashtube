@@ -7,7 +7,20 @@
         el: 'app',
         template: template,
         data: {
-          colors: ['red', 'green', 'blue', 'purple']
+          teams: [[], []],
+          matches: [{}],
+          filter_characters: function(characters, game_id) {
+            console.log('filtering characters!', characters, game_id);
+            characters = _.filter(characters, function(character) {
+              var game_found;
+              game_found = _(character.games).findWhere({
+                id: game_id
+              });
+              return game_found;
+            });
+            console.log(characters);
+            return characters;
+          }
         }
       });
       $.getJSON('/api/v1/tournament/', {
@@ -33,6 +46,14 @@
         var game_titles;
         game_titles = data.objects;
         return r.set('game_titles', game_titles);
+      });
+      $.getJSON('/api/v1/character/', {
+        format: 'json',
+        limit: 0
+      }, function(data) {
+        var characters;
+        characters = data.objects;
+        return r.set('characters', characters);
       });
       r.on('add-tournament', function(event) {
         return r.set('adding_tournament', true);
@@ -212,7 +233,7 @@
           return r.set(event.keypath + '.editing', false);
         });
       });
-      return r.on('delete-player', function(event) {
+      r.on('delete-player', function(event) {
         var delete_okay, req;
         console.log('delete', event);
         delete_okay = confirm('Are you sure you want to delete ' + event.context.handle + '?');
@@ -228,6 +249,36 @@
             return players.splice(event.index.player_index, 1);
           });
         }
+      });
+      r.on('set-add-player', function(event, team_index) {
+        var player, player_id, players, team;
+        console.log(team_index);
+        console.log(event);
+        player_id = event.context.player_id;
+        players = r.get('players');
+        player = _(players).findWhere({
+          id: player_id
+        });
+        console.log(player);
+        team = r.get(event.keypath);
+        if (!_(team).findWhere({
+          id: player_id
+        })) {
+          return team.push(player);
+        }
+      });
+      r.on('set-remove-player', function(event) {
+        var player, player_index, team_index, teams;
+        teams = r.get('teams');
+        team_index = event.index.team_index;
+        player_index = event.index.player_index;
+        player = teams[team_index][player_index];
+        teams[team_index].splice(player_index, 1);
+        console.log(teams);
+        return r.set('teams', teams);
+      });
+      return r.on('another-match', function(event) {
+        return console.log('another match', event);
       });
     });
   });

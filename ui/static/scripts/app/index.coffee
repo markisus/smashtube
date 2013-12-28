@@ -8,21 +8,29 @@ require ['../main'],
 		'underscore',
 		'text!app/index.template'], 
 	(ready, $, typeahead, Ractive, _, template) ->
-		
+
 		r = new Ractive(
 			el: 'app'
 			template: template
 			data:
-				colors: [ 'red', 'green', 'blue', 'purple' ]
+				teams: [[],[]]
+				matches: [{}]
+				filter_characters: (characters, game_id) ->
+					console.log 'filtering characters!', characters, game_id
+					characters = _.filter characters, (character) ->
+						game_found = _(character.games).findWhere {id: game_id}
+						game_found
+					console.log characters
+					characters
 		)
-		
+
 		$.getJSON '/api/v1/tournament/',
 			format: 'json'
 			limit: 0,
 			(data) ->
 				tournaments = data.objects
 				r.set('tournaments', tournaments)
-		
+
 		$.getJSON '/api/v1/player/',
 			format: 'json'
 			limit: 0,
@@ -36,6 +44,13 @@ require ['../main'],
 			(data) ->
 				game_titles = data.objects
 				r.set 'game_titles', game_titles
+		
+		$.getJSON '/api/v1/character/',
+			format: 'json'
+			limit: 0,
+			(data) ->
+				characters = data.objects
+				r.set 'characters', characters
 	
 		r.on 'add-tournament', (event) ->
 			r.set 'adding_tournament', true
@@ -194,4 +209,24 @@ require ['../main'],
 					players = r.get('players')
 					players.splice(event.index.player_index, 1)
 		#----------
-		
+
+		r.on 'set-add-player', (event, team_index) ->
+			console.log team_index
+			console.log event
+			player_id = event.context.player_id
+			players = r.get 'players'
+			player = _(players).findWhere {id: player_id}
+			console.log player
+			team = r.get event.keypath
+			if not _(team).findWhere {id: player_id}
+				team.push player
+		r.on 'set-remove-player', (event) ->
+			teams = r.get('teams')
+			team_index = event.index.team_index
+			player_index = event.index.player_index
+			player = teams[team_index][player_index]
+			teams[team_index].splice(player_index, 1)
+			console.log teams
+			r.set 'teams', teams
+		r.on 'another-match', (event) ->
+			console.log 'another match', event
