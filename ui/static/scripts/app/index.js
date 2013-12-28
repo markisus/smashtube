@@ -7,21 +7,212 @@
         el: 'app',
         template: template
       });
-      return $.getJSON('/api/v1/set/', {
-        format: 'json',
-        order_by: '-id'
+      $.getJSON('/api/v1/tournament/', {
+        format: 'json'
       }, function(data) {
-        var set, sets, teams, _i, _len;
-        sets = data.objects;
-        for (_i = 0, _len = sets.length; _i < _len; _i++) {
-          set = sets[_i];
-          teams = _(set.player_sessions).groupBy(function(ps) {
-            return ps.team;
-          }).value();
-          set.teams = teams;
+        var tournaments;
+        tournaments = data.objects;
+        return r.set('tournaments', tournaments);
+      });
+      $.getJSON('/api/v1/player/', {
+        format: 'json'
+      }, function(data) {
+        var players;
+        players = data.objects;
+        return r.set('players', players);
+      });
+      r.on('add-tournament', function(event) {
+        return r.set('adding_tournament', true);
+      });
+      r.on('cancel-add-tournament', function(event) {
+        return r.set('adding_tournament', false);
+      });
+      r.on('submit-tournament', function(event) {
+        var data, req;
+        data = {
+          name: r.get('tournament_name'),
+          date: r.get('tournament_date'),
+          location: r.get('tournament_location')
+        };
+        data = JSON.stringify(data);
+        req = $.ajax({
+          type: 'POST',
+          url: '/api/v1/tournament/',
+          data: data,
+          dataType: 'text',
+          contentType: 'application/json'
+        });
+        req.done(function(data) {
+          var location;
+          console.log('done', data);
+          location = req.getResponseHeader('Location');
+          console.log('Location', location);
+          r.set('adding_tournament', false);
+          r.set('tournament_name', void 0);
+          r.set('tournament_date', void 0);
+          r.set('tournament_location', void 0);
+          return $.getJSON(location, {
+            format: 'json'
+          }, function(data) {
+            var tournaments;
+            console.log('newly created:', data);
+            tournaments = r.get('tournaments');
+            return tournaments.push(data);
+          });
+        });
+        return req.fail(function(data) {
+          var errors;
+          errors = JSON.parse(req.responseText);
+          return r.set('tournament_errors', errors);
+        });
+      });
+      r.on('edit-tournament', function(event) {
+        r.set(event.keypath + '.old_name', event.context.name);
+        r.set(event.keypath + '.old_date', event.context.date);
+        r.set(event.keypath + '.old_location', event.context.location);
+        return r.set(event.keypath + '.editing', true);
+      });
+      r.on('cancel-edit-tournament', function(event) {
+        r.set(event.keypath + '.name', event.context.old_name);
+        r.set(event.keypath + '.date', event.context.old_date);
+        r.set(event.keypath + '.location', event.context.old_location);
+        return r.set(event.keypath + '.editing', false);
+      });
+      r.on('save-tournament', function(event) {
+        var data, req;
+        console.log(event);
+        console.log('saving');
+        data = {
+          name: event.context.name,
+          date: event.context.date,
+          location: event.context.location
+        };
+        data = JSON.stringify(data);
+        console.log(data);
+        req = $.ajax({
+          type: 'PUT',
+          url: event.context.resource_uri,
+          data: data,
+          dataType: 'text',
+          contentType: 'application/json'
+        });
+        return req.done(function() {
+          return r.set(event.keypath + '.editing', false);
+        });
+      });
+      r.on('delete-tournament', function(event) {
+        var delete_okay, req;
+        console.log('delete', event);
+        delete_okay = confirm('Are you sure you want to delete ' + event.context.name + '?');
+        if (delete_okay) {
+          req = $.ajax({
+            type: 'DELETE',
+            url: event.context.resource_uri
+          });
+          return req.done(function() {
+            var tournaments;
+            console.log('splicing');
+            tournaments = r.get('tournaments');
+            console.log(tournaments);
+            return tournaments.splice(event.index.tournament_index, 1);
+          });
         }
-        console.log(sets);
-        return r.set('sets', data.objects);
+      });
+      r.on('add-player', function(event) {
+        return r.set('adding_player', true);
+      });
+      r.on('cancel-add-player', function(event) {
+        return r.set('adding_player', false);
+      });
+      r.on('submit-player', function(event) {
+        var data, req;
+        data = {
+          handle: r.get('player_handle'),
+          first_name: r.get('player_first_name'),
+          last_name: r.get('player_last_name')
+        };
+        data = JSON.stringify(data);
+        req = $.ajax({
+          type: 'POST',
+          url: '/api/v1/player/',
+          data: data,
+          dataType: 'text',
+          contentType: 'application/json'
+        });
+        req.done(function(data) {
+          var location;
+          console.log('done', data);
+          location = req.getResponseHeader('Location');
+          console.log('Location', location);
+          r.set('adding_player', false);
+          r.set('player_handle', void 0);
+          r.set('player_first_name', void 0);
+          r.set('player_last_name', void 0);
+          return $.getJSON(location, {
+            format: 'json'
+          }, function(data) {
+            var players;
+            console.log('newly created:', data);
+            players = r.get('players');
+            return players.push(data);
+          });
+        });
+        return req.fail(function(data) {
+          var errors;
+          errors = JSON.parse(req.responseText);
+          return r.set('player_errors', errors);
+        });
+      });
+      r.on('edit-player', function(event) {
+        r.set(event.keypath + '.old_handle', event.context.handle);
+        r.set(event.keypath + '.old_first_name', event.context.first_name);
+        r.set(event.keypath + '.old_last_name', event.context.last_name);
+        return r.set(event.keypath + '.editing', true);
+      });
+      r.on('cancel-edit-player', function(event) {
+        r.set(event.keypath + '.handle', event.context.old_handle);
+        r.set(event.keypath + '.first_name', event.context.old_first_name);
+        r.set(event.keypath + '.last_name', event.context.old_last_name);
+        return r.set(event.keypath + '.editing', false);
+      });
+      r.on('save-player', function(event) {
+        var data, req;
+        console.log(event);
+        console.log('saving');
+        data = {
+          handle: event.context.handle,
+          first_name: event.context.first_name,
+          last_name: event.context.last_name
+        };
+        data = JSON.stringify(data);
+        console.log(data);
+        req = $.ajax({
+          type: 'PUT',
+          url: event.context.resource_uri,
+          data: data,
+          dataType: 'text',
+          contentType: 'application/json'
+        });
+        return req.done(function() {
+          return r.set(event.keypath + '.editing', false);
+        });
+      });
+      return r.on('delete-player', function(event) {
+        var delete_okay, req;
+        console.log('delete', event);
+        delete_okay = confirm('Are you sure you want to delete ' + event.context.handle + '?');
+        if (delete_okay) {
+          req = $.ajax({
+            type: 'DELETE',
+            url: event.context.resource_uri
+          });
+          return req.done(function() {
+            var players;
+            console.log('splicing');
+            players = r.get('players');
+            return players.splice(event.index.player_index, 1);
+          });
+        }
       });
     });
   });

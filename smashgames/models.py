@@ -3,7 +3,9 @@ from smashconstants.models import Character, GameTitle, Stage
 from smashtube.util import nontrivial as n, str_or_else as s
  
 class Player(models.Model):
-    name = models.CharField(blank=False, null=False, max_length=50)
+    handle = models.CharField(unique=True, max_length=50)
+    first_name = models.CharField(blank=True, null=False, default='', max_length=50)
+    last_name = models.CharField(blank=True, null=False, default='', max_length=50)
     mains = models.ManyToManyField(Character)
 
     def __unicode__(self):
@@ -11,7 +13,8 @@ class Player(models.Model):
 
 class Tournament(models.Model):
     name = models.CharField(unique=True, max_length=200)
-
+    date = models.DateField(blank=True, null=True)
+    location = models.CharField(blank=True, null=False, max_length=200)
     def __unicode__(self):
         return self.name
 

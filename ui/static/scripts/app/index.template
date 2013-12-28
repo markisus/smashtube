@@ -1,5 +1,74 @@
-<h2>Tournaments</h2>
+﻿<h2>Tournaments ►</h2>
 
-<h2>Sets</h2>
+<div id="tournaments">
+<table>
+<tr><th>Tournament</th><th>Date</th><th>Location</th></tr>
+{{#tournaments:tournament_index}}
+<tr>
+	{{^.editing}}
+	<td>{{name}}</td>
+	<td>{{date ? date : 'N/A'}}</td>
+	<td>{{location ? location : 'N/A'}}</td>
+	<td><button proxy-click="edit-tournament">Edit</button>
+		<button proxy-click="delete-tournament">Delete</button></td>
+	{{/.editing}}
+	
+	{{#.editing}}
+	<td><input type="text" value="{{name}}"></td>
+	<td><input type="date" value="{{date}}"></td>
+	<td><input type="text" value="{{location}}"></td>
+	<td><button proxy-click="save-tournament">Save</button><button proxy-click="cancel-edit-tournament">Cancel</button></td>
+	{{/.editing}}
 
-<h2>Players</h2>
+</tr>
+{{/tournaments}}
+</table>
+</div>
+
+<button proxy-click="add-tournament" style="{{adding_tournament ? 'display:none' : ''}}">Add</button>
+<div id="add-tournament" style="{{adding_tournament ? '' : 'display:none'}}">
+{{tournament_errors.tournament.name}}
+<b>Tournament Name</b> <input type="text" value="{{tournament_name}}"><br/>
+{{tournament_errors.tournament.date}}
+Date <input type="date" value="{{tournament_date}}"><br/>
+{{tournament_errors.tournament.location}}
+Location <input type="text" value="{{tournament_location}}"><br/>
+<button proxy-click="submit-tournament">Submit</button><button proxy-click="cancel-add-tournament">Cancel</button>
+</div>
+
+<h2>Players ►</h2>
+<div id="players">
+<table>
+<tr><th>Handle</th><th>First Name</th><th>Last Name</th></tr>
+{{#players:player_index}}
+<tr>
+	{{^.editing}}
+	<td>{{handle}}</td>
+	<td>{{first_name ? first_name : 'N/A'}}</td>
+	<td>{{last_name ? last_name : 'N/A'}}</td>
+	<td><button proxy-click="edit-player">Edit</button>
+		<button proxy-click="delete-player">Delete</button></td>
+	{{/.editing}}
+	
+	{{#.editing}}
+	<td><input type="text" value="{{handle}}"></td>
+	<td><input type="text" value="{{first_name}}"></td>
+	<td><input type="text" value="{{last_name}}"></td>
+	<td><button proxy-click="save-player">Save</button><button proxy-click="cancel-edit-player">Cancel</button></td>
+	{{/.editing}}
+
+</tr>
+{{/players}}
+</table>
+</div>
+
+<button proxy-click="add-player" style="{{adding_player ? 'display:none' : ''}}">Add</button>
+<div id="add-player" style="{{adding_player ? '' : 'display:none'}}">
+{{player_errors.player.handle}}
+<b>Handle</b> <input type="text" value="{{player_name}}"><br/>
+{{player_errors.player.first_name}}
+First Name <input type="text" value="{{player_first_name}}"><br/>
+{{player_errors.player.last_name}}
+Last Name <input type="text" value="{{player_last_name}}"><br/>
+<button proxy-click="submit-player">Submit</button><button proxy-click="cancel-add-player">Cancel</button>
+</div>
