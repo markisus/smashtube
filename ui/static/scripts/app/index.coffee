@@ -12,19 +12,30 @@ require ['../main'],
 		r = new Ractive(
 			el: 'app'
 			template: template
+			data:
+				colors: [ 'red', 'green', 'blue', 'purple' ]
 		)
 		
 		$.getJSON '/api/v1/tournament/',
-			format: 'json',
+			format: 'json'
+			limit: 0,
 			(data) ->
 				tournaments = data.objects
 				r.set('tournaments', tournaments)
 		
 		$.getJSON '/api/v1/player/',
-			format: 'json',
+			format: 'json'
+			limit: 0,
 			(data) ->
 				players = data.objects
 				r.set('players', players)
+		
+		$.getJSON '/api/v1/game-title/',
+			format: 'json'
+			limit: 0,
+			(data) ->
+				game_titles = data.objects
+				r.set 'game_titles', game_titles
 	
 		r.on 'add-tournament', (event) ->
 			r.set 'adding_tournament', true
@@ -62,6 +73,7 @@ require ['../main'],
 				r.set 'tournament_errors', errors
 				
 		r.on 'edit-tournament', (event) ->
+			context_copy = _.extend({}, event.context)
 			r.set event.keypath + '.old_name', event.context.name
 			r.set event.keypath + '.old_date', event.context.date
 			r.set event.keypath + '.old_location', event.context.location
@@ -181,3 +193,5 @@ require ['../main'],
 					console.log 'splicing'
 					players = r.get('players')
 					players.splice(event.index.player_index, 1)
+		#----------
+		

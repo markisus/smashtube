@@ -5,21 +5,34 @@
       var r;
       r = new Ractive({
         el: 'app',
-        template: template
+        template: template,
+        data: {
+          colors: ['red', 'green', 'blue', 'purple']
+        }
       });
       $.getJSON('/api/v1/tournament/', {
-        format: 'json'
+        format: 'json',
+        limit: 0
       }, function(data) {
         var tournaments;
         tournaments = data.objects;
         return r.set('tournaments', tournaments);
       });
       $.getJSON('/api/v1/player/', {
-        format: 'json'
+        format: 'json',
+        limit: 0
       }, function(data) {
         var players;
         players = data.objects;
         return r.set('players', players);
+      });
+      $.getJSON('/api/v1/game-title/', {
+        format: 'json',
+        limit: 0
+      }, function(data) {
+        var game_titles;
+        game_titles = data.objects;
+        return r.set('game_titles', game_titles);
       });
       r.on('add-tournament', function(event) {
         return r.set('adding_tournament', true);
@@ -67,6 +80,8 @@
         });
       });
       r.on('edit-tournament', function(event) {
+        var context_copy;
+        context_copy = _.extend({}, event.context);
         r.set(event.keypath + '.old_name', event.context.name);
         r.set(event.keypath + '.old_date', event.context.date);
         r.set(event.keypath + '.old_location', event.context.location);
