@@ -14,14 +14,18 @@ require ['../main'],
 			template: template
 			data:
 				teams: [[],[]]
-				matches: [{}]
+				matches: [[[], []]]
 				filter_characters: (characters, game_id) ->
-					console.log 'filtering characters!', characters, game_id
 					characters = _.filter characters, (character) ->
-						game_found = _(character.games).findWhere {id: game_id}
-						game_found
-					console.log characters
+						_(character.games).findWhere {id: game_id}
 					characters
+				filter_players: (teams, players) ->
+					console.log 'filtering players'
+					# remove from players those who are already on a team
+					_.difference players, _.flatten(teams)
+				sort: (arr, key) ->
+					_.sortBy arr, (item) -> 
+						item[key]
 		)
 
 		$.getJSON '/api/v1/tournament/',
@@ -37,6 +41,7 @@ require ['../main'],
 			(data) ->
 				players = data.objects
 				r.set('players', players)
+				r.set('available_players', players)
 		
 		$.getJSON '/api/v1/game-title/',
 			format: 'json'
@@ -210,23 +215,40 @@ require ['../main'],
 					players.splice(event.index.player_index, 1)
 		#----------
 
-		r.on 'set-add-player', (event, team_index) ->
-			console.log team_index
-			console.log event
-			player_id = event.context.player_id
+		r.observe 'teams', (current, previous) ->
 			players = r.get 'players'
+			r.set 'available_players', [players[0]]
+			
+		r.on 'set-add-player', (event, team_index) ->
+			console.log 'adding with event', event
+			player_id = event.context.player_id
+			players = r.get 'available_players'
+			console.log 'finding player with id', player_id, 'from players', players
 			player = _(players).findWhere {id: player_id}
-			console.log player
+			console.log 'found player', player
 			team = r.get event.keypath
-			if not _(team).findWhere {id: player_id}
+			teams = r.get 'teams'
+			if not _(teams).flatten().findWhere {id: player_id}
 				team.push player
+			console.log teams
+
 		r.on 'set-remove-player', (event) ->
 			teams = r.get('teams')
 			team_index = event.index.team_index
 			player_index = event.index.player_index
 			player = teams[team_index][player_index]
 			teams[team_index].splice(player_index, 1)
-			console.log teams
 			r.set 'teams', teams
+			
 		r.on 'another-match', (event) ->
-			console.log 'another match', event
+			console.log event
+			matches = r.get 'matches'
+			teams = r.get 'teams'
+			console.log teams
+			console.log matches
+			matches.push []
+			
+		r.on 'remove-match', (event) ->
+			console.log 'remove'
+			matches = r.get 'matches'
+			matches.pop()

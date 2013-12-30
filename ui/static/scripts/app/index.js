@@ -8,18 +8,23 @@
         template: template,
         data: {
           teams: [[], []],
-          matches: [{}],
+          matches: [[[], []]],
           filter_characters: function(characters, game_id) {
-            console.log('filtering characters!', characters, game_id);
             characters = _.filter(characters, function(character) {
-              var game_found;
-              game_found = _(character.games).findWhere({
+              return _(character.games).findWhere({
                 id: game_id
               });
-              return game_found;
             });
-            console.log(characters);
             return characters;
+          },
+          filter_players: function(teams, players) {
+            console.log('filtering players');
+            return _.difference(players, _.flatten(teams));
+          },
+          sort: function(arr, key) {
+            return _.sortBy(arr, function(item) {
+              return item[key];
+            });
           }
         }
       });
@@ -37,7 +42,8 @@
       }, function(data) {
         var players;
         players = data.objects;
-        return r.set('players', players);
+        r.set('players', players);
+        return r.set('available_players', players);
       });
       $.getJSON('/api/v1/game-title/', {
         format: 'json',
@@ -250,22 +256,29 @@
           });
         }
       });
-      r.on('set-add-player', function(event, team_index) {
-        var player, player_id, players, team;
-        console.log(team_index);
-        console.log(event);
-        player_id = event.context.player_id;
+      r.observe('teams', function(current, previous) {
+        var players;
         players = r.get('players');
+        return r.set('available_players', [players[0]]);
+      });
+      r.on('set-add-player', function(event, team_index) {
+        var player, player_id, players, team, teams;
+        console.log('adding with event', event);
+        player_id = event.context.player_id;
+        players = r.get('available_players');
+        console.log('finding player with id', player_id, 'from players', players);
         player = _(players).findWhere({
           id: player_id
         });
-        console.log(player);
+        console.log('found player', player);
         team = r.get(event.keypath);
-        if (!_(team).findWhere({
+        teams = r.get('teams');
+        if (!_(teams).flatten().findWhere({
           id: player_id
         })) {
-          return team.push(player);
+          team.push(player);
         }
+        return console.log(teams);
       });
       r.on('set-remove-player', function(event) {
         var player, player_index, team_index, teams;
@@ -274,11 +287,22 @@
         player_index = event.index.player_index;
         player = teams[team_index][player_index];
         teams[team_index].splice(player_index, 1);
-        console.log(teams);
         return r.set('teams', teams);
       });
-      return r.on('another-match', function(event) {
-        return console.log('another match', event);
+      r.on('another-match', function(event) {
+        var matches, teams;
+        console.log(event);
+        matches = r.get('matches');
+        teams = r.get('teams');
+        console.log(teams);
+        console.log(matches);
+        return matches.push([]);
+      });
+      return r.on('remove-match', function(event) {
+        var matches;
+        console.log('remove');
+        matches = r.get('matches');
+        return matches.pop();
       });
     });
   });

@@ -92,37 +92,46 @@ Set Description <input type="text" value="{{set_description}}"><br/>
 
 <h3>Teams</h3>
 {{#teams:team_index}}
-Team {{team_index + 1}}
-<select value="{{.player_id}}">{{#players}}<option value="{{id}}">{{handle}}</option>{{/players}}</select>
+<b>Team {{team_index + 1}}</b>
+<select value="{{.player_id}}">{{#sort(available_players, 'handle')}}<option value="{{id}}">{{handle}}</option>{{/players}}</select>
 <button proxy-click="set-add-player:{{team_index}}">Add</button><br/>
 
-{{#.:player_index}}
+{{#this:player_index}}
 &emsp; {{handle}} <button proxy-click="set-remove-player:{{player_index}}">Remove</button>{{{teams[team_index].length - 1 == player_index ? '<br/>' : ' '}}}
 {{/.}}
 {{/teams}}
 
 <h3>Matches</h3>
-{{#matches}}
-Match 1 <br/>
-{{#teams:team_index}}
-{{#.:player_index}}
-&emsp; {{handle}} 
-<select value="{{.character_id}}">
-{{#filter_characters(characters, set_game_title)}}
-<option value="id">{{name}}</option>
-{{/characters}}
-</select> 
-{{/.}}
-{{^.}}
-&emsp; No one
-{{/.}}
+{{#matches:match_index}}
+	<b>Match {{match_index + 1}}</b> <br/>
+	{{#teams:team_index}}
+		{{#.:player_index}}
+			&emsp; {{handle}} 
+			<select id="character.{{match_index}}.{{player_index}}">
+			{{#filter_characters(characters, set_game_title)}}
+			<option value="id">{{name}}</option>
+			{{/characters}}
+			</select> {{{teams[team_index].length - 1 == player_index ? '' : '<br/>'}}}
+		{{/.}}
+		
+		{{^.}}
+		&emsp; No one
+		{{/.}}
 
-{{{team_index == teams.length-1 ? '': '<br/>&emsp;&emsp; <i>Versus</i><br/>'}}}
-{{/teams}}<br/><br/>
+		{{{team_index == teams.length-1 ? '': '<br/>&emsp;&emsp; <i>Versus</i><br/>'}}}
+	{{/teams}}<br/><br/>
 
-&emsp; Youtube Link <input type="text" value="{{link}}"> Start <input type="text" value="{{start_time}}" placeholder="mm:ss">End <input type="text" value="{{end_time}}" placeholder="mm:ss">
-<br/>
-<button proxy-click="another-match">Another Match</button><br/><br/>
+	&emsp; Youtube Link <input type="text" value="{{link}}"> Start <input type="text" value="{{start_time}}" placeholder="mm:ss">End <input type="text" value="{{end_time}}" placeholder="mm:ss">
+	<br/>
+	{{#(match_index == matches.length-1)}}
+	<button proxy-click="another-match">Another Match</button>
+	{{#match_index}}
+	<button proxy-click="remove-match">Remove Match</button>
+	{{/match_index}}
+	{{/last_match}}
+
+	
 {{/matches}}
+<br/>
 <button>Submit Set</button>
 
