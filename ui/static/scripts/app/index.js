@@ -71,6 +71,10 @@
         characters = data.objects;
         return r.set('characters', characters);
       });
+      r.on('display', function(event, name) {
+        console.log(event, name);
+        return r.set('displayed', name);
+      });
       r.on('add-tournament', function(event) {
         return r.set('adding_tournament', true);
       });
@@ -335,10 +339,53 @@
           end: ''
         });
       });
-      return r.on('remove-match', function(event) {
+      r.on('remove-match', function(event) {
         var matches;
         matches = r.get('matches');
         return matches.pop();
+      });
+      r.observe('teams', function(current, old) {
+        var team, _i, _len;
+        for (_i = 0, _len = current.length; _i < _len; _i++) {
+          team = current[_i];
+          if (team.length === 0) {
+            r.set('set_error', 'One of the teams has no players!');
+            return;
+          }
+        }
+        return r.set('set_error', void 0);
+      });
+      return r.on('submit-match', function(event) {
+        var data, description, game_title_id, game_title_partial, req, set, tournament_id, tournament_partial;
+        game_title_id = r.get('set_game_title');
+        tournament_id = r.get('set_tournament');
+        console.log('tournament id??', tournament_id, _.isNumber(tournament_id));
+        if (_.isNumber(tournament_id)) {
+          tournament_partial = {
+            tournament: '/api/v1/tournament/' + tournament_id + '/'
+          };
+        } else {
+          tournament_partial = {};
+        }
+        game_title_partial = {
+          game_title: '/api/v1/game-title/' + game_title_id + '/'
+        };
+        description = r.get('set_description');
+        set = _.extend({
+          description: description,
+          matches: []
+        }, tournament_partial, game_title_partial);
+        data = JSON.stringify(set);
+        req = $.ajax({
+          type: 'POST',
+          url: '/api/v1/set/',
+          data: data,
+          dataType: 'text',
+          contentType: 'application/json'
+        });
+        return req.done(function() {
+          return console.log('DONE!');
+        });
       });
     });
   });

@@ -65,6 +65,10 @@ require ['../main'],
 				characters = data.objects
 				r.set 'characters', characters
 	
+		r.on 'display', (event, name) ->
+			console.log event, name
+			r.set 'displayed', name
+			
 		r.on 'add-tournament', (event) ->
 			r.set 'adding_tournament', true
 		r.on 'cancel-add-tournament', (event) ->
@@ -274,6 +278,42 @@ require ['../main'],
 		r.on 'remove-match', (event) ->
 			matches = r.get 'matches'
 			matches.pop()
+		
+		r.observe 'teams', (current, old) ->
+			for team in current
+				if team.length == 0
+					r.set 'set_error', 'One of the teams has no players!'
+					return
+			r.set 'set_error', undefined
+		
+		r.on 'submit-match', (event) ->
+			game_title_id = r.get 'set_game_title'
+			tournament_id = r.get 'set_tournament'
+			
+			console.log 'tournament id??', tournament_id, _.isNumber(tournament_id)
+			if _.isNumber(tournament_id)
+				tournament_partial = {tournament: '/api/v1/tournament/'+tournament_id + '/'}
+			else
+				tournament_partial = {}
+			
+			game_title_partial = {game_title: '/api/v1/game-title/'+ game_title_id + '/'}
+			
+			description = r.get 'set_description'
+			
+			set = _.extend {description: description, matches: []}, tournament_partial, game_title_partial
+			
+			data = JSON.stringify set
+			
+			req = $.ajax
+				type: 'POST',
+				url: '/api/v1/set/',
+				data: data,
+				dataType: 'text',
+				contentType: 'application/json'
+			req.done () ->
+				console.log 'DONE!'
+			
+				
 			
 			
 			
