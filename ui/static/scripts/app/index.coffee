@@ -14,8 +14,14 @@ require ['../main'],
 			template: template
 			data:
 				teams: [[],[]]
-				matches: [[[], []]]
+				matches: [
+					{player_sessions: [[],[]],
+					link: '',
+					start: '',
+					end:''}
+				]
 				filter_characters: (characters, game_id) ->
+					console.log 'filter characters', characters, game_id
 					characters = _.filter characters, (character) ->
 						_(character.games).findWhere {id: game_id}
 					characters
@@ -41,7 +47,9 @@ require ['../main'],
 			(data) ->
 				players = data.objects
 				r.set('players', players)
-				r.set('available_players', players)
+				available_players = _.clone players
+				console.log 'available', available_players
+				r.set('available_players', available_players)
 		
 		$.getJSON '/api/v1/game-title/',
 			format: 'json'
@@ -167,6 +175,8 @@ require ['../main'],
 						console.log 'newly created:', data
 						players = r.get 'players'
 						players.push data
+						available_players = r.get 'available_players'
+						available_players.push data
 						
 			req.fail (data) ->
 				errors = JSON.parse req.responseText
@@ -214,41 +224,56 @@ require ['../main'],
 					players = r.get('players')
 					players.splice(event.index.player_index, 1)
 		#----------
-
-		r.observe 'teams', (current, previous) ->
-			players = r.get 'players'
-			r.set 'available_players', [players[0]]
-			
-		r.on 'set-add-player', (event, team_index) ->
-			console.log 'adding with event', event
-			player_id = event.context.player_id
-			players = r.get 'available_players'
-			console.log 'finding player with id', player_id, 'from players', players
-			player = _(players).findWhere {id: player_id}
-			console.log 'found player', player
-			team = r.get event.keypath
+		r.on 'team-add-player', (event, team_index) ->
 			teams = r.get 'teams'
-			if not _(teams).flatten().findWhere {id: player_id}
-				team.push player
-			console.log teams
-
-		r.on 'set-remove-player', (event) ->
-			teams = r.get('teams')
 			team_index = event.index.team_index
-			player_index = event.index.player_index
-			player = teams[team_index][player_index]
-			teams[team_index].splice(player_index, 1)
-			r.set 'teams', teams
-			
-		r.on 'another-match', (event) ->
-			console.log event
+			players = r.get 'available_players'
+			player_id = r.get 'selected_player_id'
+			player = _(players).findWhere {id: player_id}
+			teams[team_index].push(player)
+			players = _.without players, player
+			r.set 'available_players', players
 			matches = r.get 'matches'
-			teams = r.get 'teams'
-			console.log teams
-			console.log matches
-			matches.push []
+			for match in matches
+				match.player_sessions[team_index].push({player:player, character:{id:undefined}})
+			r.update 'matches'
 			
+		r.on 'team-remove-player', (event) ->
+			player = _(r.get 'players').findWhere {id: event.context.id}
+			available_players = r.get 'available_players'
+			available_players.push player
+			team_index = event.index.team_index
+			team = r.get 'teams.' + team_index
+			team = _.without team, player
+			r.set 'teams.' + team_index, team
+			matches = r.get 'matches'
+			for match in matches
+				match.player_sessions[team_index] = _.filter match.player_sessions[team_index], (ps) ->
+					ps.player.id != player.id
+			r.update 'matches'
+
+		r.observe 'available_players', (current, old) ->
+			if current.length
+				r.set 'selected_player_id', current[0].id
+		
+		r.on 'add-match', (event) ->
+			first_match = r.get 'matches.0'
+			first_ps = first_match.player_sessions
+			new_ps = []
+			for team in first_ps
+				team_copy = _.clone team
+				new_ps.push team_copy
+			matches = r.get 'matches'
+			matches.push {
+				player_sessions: new_ps
+				link: first_match.link
+				start: ''
+				end: ''
+			}
+		
 		r.on 'remove-match', (event) ->
-			console.log 'remove'
 			matches = r.get 'matches'
 			matches.pop()
+			
+			
+			

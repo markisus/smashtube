@@ -74,6 +74,7 @@ Last Name <input type="text" value="{{player_last_name}}"><br/>
 </div>
 
 <h2>► Sets</h2>
+<div id="sets">
 <h3>General</h3>
 Tournament 
 <select value="{{set_tournament}}">
@@ -92,46 +93,55 @@ Set Description <input type="text" value="{{set_description}}"><br/>
 
 <h3>Teams</h3>
 {{#teams:team_index}}
-<b>Team {{team_index + 1}}</b>
-<select value="{{.player_id}}">{{#sort(available_players, 'handle')}}<option value="{{id}}">{{handle}}</option>{{/players}}</select>
-<button proxy-click="set-add-player:{{team_index}}">Add</button><br/>
+	<b>Team {{team_index+1}}</b><br/>
+	&emsp;Choose Player
+	
+	{{#(available_players.length > 0)}}
+		<select value="{{selected_player_id}}">
+		{{#sort(available_players, 'handle')}}
+			<option value="{{id}}">{{handle}}</option>
+		{{/player choices}}
+		</select>
+	{{/available players exist}}
 
-{{#this:player_index}}
-&emsp; {{handle}} <button proxy-click="set-remove-player:{{player_index}}">Remove</button>{{{teams[team_index].length - 1 == player_index ? '<br/>' : ' '}}}
-{{/.}}
+	<button disabled="{{available_players.length ? '': 'disabled'}}" proxy-click="team-add-player">Add</button>
+	<br/>
+	{{#.}}
+		&emsp;{{handle}} <button proxy-click="team-remove-player">Remove</button>
+	{{/.}}
+<br/>
 {{/teams}}
 
 <h3>Matches</h3>
 {{#matches:match_index}}
 	<b>Match {{match_index + 1}}</b> <br/>
-	{{#teams:team_index}}
-		{{#.:player_index}}
-			&emsp; {{handle}} 
-			<select id="character.{{match_index}}.{{player_index}}">
+	{{#player_sessions:team_index}}
+		&emsp;Team {{team_index + 1}} <br/>
+		{{#.:player_session_index}}
+			&emsp;&emsp;{{player.handle}} {{character.name}} 
+			<select value="{{character.id}}">
 			{{#filter_characters(characters, set_game_title)}}
-			<option value="id">{{name}}</option>
+				<option value="{{id}}">{{name}}</option>
 			{{/characters}}
-			</select> {{{teams[team_index].length - 1 == player_index ? '' : '<br/>'}}}
+			</select><br/>
 		{{/.}}
-		
-		{{^.}}
-		&emsp; No one
-		{{/.}}
-
-		{{{team_index == teams.length-1 ? '': '<br/>&emsp;&emsp; <i>Versus</i><br/>'}}}
-	{{/teams}}<br/><br/>
-
-	&emsp; Youtube Link <input type="text" value="{{link}}"> Start <input type="text" value="{{start_time}}" placeholder="mm:ss">End <input type="text" value="{{end_time}}" placeholder="mm:ss">
-	<br/>
-	{{#(match_index == matches.length-1)}}
-	<button proxy-click="another-match">Another Match</button>
-	{{#match_index}}
-	<button proxy-click="remove-match">Remove Match</button>
-	{{/match_index}}
-	{{/last_match}}
-
-	
+		<br/>
+	{{/player_sessions}}
+	Link <input type="text" value="{{link}}"><br/>
+	Start <input type="text" value="{{start}}" placeholder="mm:ss">
+	End <input type="text" value="{{end}}" placeholder="mm:ss"><br/><br/>
 {{/matches}}
+{{#(matches.length < 10)}}
+<button proxy-click="add-match">Another match</button>
+{{/matches}}
+{{#(matches.length > 1)}}
+<button proxy-click="remove-match">Remove last match</button>
+{{/matches > 1}}
+</div>
 <br/>
-<button>Submit Set</button>
-
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>

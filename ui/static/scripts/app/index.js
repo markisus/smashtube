@@ -8,8 +8,16 @@
         template: template,
         data: {
           teams: [[], []],
-          matches: [[[], []]],
+          matches: [
+            {
+              player_sessions: [[], []],
+              link: '',
+              start: '',
+              end: ''
+            }
+          ],
           filter_characters: function(characters, game_id) {
+            console.log('filter characters', characters, game_id);
             characters = _.filter(characters, function(character) {
               return _(character.games).findWhere({
                 id: game_id
@@ -40,10 +48,12 @@
         format: 'json',
         limit: 0
       }, function(data) {
-        var players;
+        var available_players, players;
         players = data.objects;
         r.set('players', players);
-        return r.set('available_players', players);
+        available_players = _.clone(players);
+        console.log('available', available_players);
+        return r.set('available_players', available_players);
       });
       $.getJSON('/api/v1/game-title/', {
         format: 'json',
@@ -193,10 +203,12 @@
           return $.getJSON(location, {
             format: 'json'
           }, function(data) {
-            var players;
+            var available_players, players;
             console.log('newly created:', data);
             players = r.get('players');
-            return players.push(data);
+            players.push(data);
+            available_players = r.get('available_players');
+            return available_players.push(data);
           });
         });
         return req.fail(function(data) {
@@ -256,51 +268,75 @@
           });
         }
       });
-      r.observe('teams', function(current, previous) {
-        var players;
-        players = r.get('players');
-        return r.set('available_players', [players[0]]);
-      });
-      r.on('set-add-player', function(event, team_index) {
-        var player, player_id, players, team, teams;
-        console.log('adding with event', event);
-        player_id = event.context.player_id;
+      r.on('team-add-player', function(event, team_index) {
+        var match, matches, player, player_id, players, teams, _i, _len;
+        teams = r.get('teams');
+        team_index = event.index.team_index;
         players = r.get('available_players');
-        console.log('finding player with id', player_id, 'from players', players);
+        player_id = r.get('selected_player_id');
         player = _(players).findWhere({
           id: player_id
         });
-        console.log('found player', player);
-        team = r.get(event.keypath);
-        teams = r.get('teams');
-        if (!_(teams).flatten().findWhere({
-          id: player_id
-        })) {
-          team.push(player);
-        }
-        return console.log(teams);
-      });
-      r.on('set-remove-player', function(event) {
-        var player, player_index, team_index, teams;
-        teams = r.get('teams');
-        team_index = event.index.team_index;
-        player_index = event.index.player_index;
-        player = teams[team_index][player_index];
-        teams[team_index].splice(player_index, 1);
-        return r.set('teams', teams);
-      });
-      r.on('another-match', function(event) {
-        var matches, teams;
-        console.log(event);
+        teams[team_index].push(player);
+        players = _.without(players, player);
+        r.set('available_players', players);
         matches = r.get('matches');
-        teams = r.get('teams');
-        console.log(teams);
-        console.log(matches);
-        return matches.push([]);
+        for (_i = 0, _len = matches.length; _i < _len; _i++) {
+          match = matches[_i];
+          match.player_sessions[team_index].push({
+            player: player,
+            character: {
+              id: void 0
+            }
+          });
+        }
+        return r.update('matches');
+      });
+      r.on('team-remove-player', function(event) {
+        var available_players, match, matches, player, team, team_index, _i, _len;
+        player = _(r.get('players')).findWhere({
+          id: event.context.id
+        });
+        available_players = r.get('available_players');
+        available_players.push(player);
+        team_index = event.index.team_index;
+        team = r.get('teams.' + team_index);
+        team = _.without(team, player);
+        r.set('teams.' + team_index, team);
+        matches = r.get('matches');
+        for (_i = 0, _len = matches.length; _i < _len; _i++) {
+          match = matches[_i];
+          match.player_sessions[team_index] = _.filter(match.player_sessions[team_index], function(ps) {
+            return ps.player.id !== player.id;
+          });
+        }
+        return r.update('matches');
+      });
+      r.observe('available_players', function(current, old) {
+        if (current.length) {
+          return r.set('selected_player_id', current[0].id);
+        }
+      });
+      r.on('add-match', function(event) {
+        var first_match, first_ps, matches, new_ps, team, team_copy, _i, _len;
+        first_match = r.get('matches.0');
+        first_ps = first_match.player_sessions;
+        new_ps = [];
+        for (_i = 0, _len = first_ps.length; _i < _len; _i++) {
+          team = first_ps[_i];
+          team_copy = _.clone(team);
+          new_ps.push(team_copy);
+        }
+        matches = r.get('matches');
+        return matches.push({
+          player_sessions: new_ps,
+          link: first_match.link,
+          start: '',
+          end: ''
+        });
       });
       return r.on('remove-match', function(event) {
         var matches;
-        console.log('remove');
         matches = r.get('matches');
         return matches.pop();
       });
